@@ -1,0 +1,377 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FD805312-EA03-494C-B45A-A0BFFC62918D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PhysicalQuantities</RootNamespace>
+    <AssemblyName>PhysicalQuantities</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Quantities Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Quantities Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\PhysicalQuantities.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseQuantity.cs" />
+    <Compile Include="BaseUnit.cs" />
+    <Compile Include="DerivedQuantity.cs" />
+    <Compile Include="Imperial.Angle.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.AngularVelocity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Area.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Density.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Dimensionless.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Energy.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Force.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Length.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Mass.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Power.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Pressure.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Speed.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Temperature.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Time.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.Volume.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial.VolumetricFlow.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="INamed.cs" />
+    <Compile Include="INamedSymbol.cs" />
+    <Compile Include="MagnitudesGenerator.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NormalizedQuantity.cs" />
+    <Compile Include="Quantities.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Quantity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuantityExp.cs" />
+    <Compile Include="QuantityValue.cs" />
+    <Compile Include="ReferenceEqualityComparer.cs" />
+    <Compile Include="ScaledUnit.cs" />
+    <Compile Include="SI.AbsorbedDose.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Acceleration.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Action.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Angle.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.AngularMomentum.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.AngularVelocity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Area.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.AreaDensity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.CatalyticActivity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Density.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Dimensionless.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.ElectricCapacitance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.ElectricCharge.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.ElectricConductance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.ElectricCurrent.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.ElectricResistance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Energy.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.EquivalentDose.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Force.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Frequency.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.HeatCapacity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Illuminance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Inductance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Jerk.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Jounce.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Length.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.LuminousFlux.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.LuminousIntensity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.MagneticField.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.MagneticFlux.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Mass.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Momentum.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.NewtonianConstantOfGravitationQuantity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Power.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Pressure.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.RadioactiveDecay.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.SolidAngle.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.SpecificVolume.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Speed.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Substance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Temperature.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Time.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Torque.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Voltage.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Volume.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.VolumetricFlow.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Wavenumber.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI.Yank.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Unit.cs" />
+    <Compile Include="UnitConversion.cs" />
+    <Compile Include="UnitConversionTable.cs" />
+    <Compile Include="UnitPrefix.cs" />
+    <Compile Include="UnitPrefixTable.cs" />
+    <Compile Include="UnitSystem.cs" />
+    <Compile Include="UnitSystemConversion.cs" />
+    <Compile Include="UnitGroup.cs" />
+    <Compile Include="US.Angle.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.AngularVelocity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Area.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Density.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Dimensionless.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Energy.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Force.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Length.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Mass.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Power.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Pressure.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Speed.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Temperature.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Time.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.Volume.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US.VolumetricFlow.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Magnitudes.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="MagnitudesDocumentation.css">
+      <DependentUpon>MagnitudesDocumentation.tt</DependentUpon>
+    </Content>
+    <None Include="Common.ttinclude" />
+    <None Include="MagnitudesDocumentation.html">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MagnitudesDocumentation.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MagnitudesDocumentation.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MagnitudesDocumentation.html</LastGenOutput>
+    </None>
+    <None Include="MagnitudesGenerator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MagnitudesGenerator.cs</LastGenOutput>
+    </None>
+    <None Include="PhysicalQuantities.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

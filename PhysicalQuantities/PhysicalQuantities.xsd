@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 rel. 2 (http://www.altova.com) by TeaM DJiNN (TeaM DJiNN) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:attribute name="Reference" type="xs:anyURI"/>
+	<xs:element name="PhysicalQuantities">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Quantities">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Quantity" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+						<xs:attribute ref="Reference" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PrefixTables">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="PrefixTable" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="UnitSystems">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="UnitSystem" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="UnitConversions">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="UnitConversion" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Constants"/>
+			</xs:sequence>
+			<xs:attribute ref="Reference"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Quantity" abstract="true"/>
+	<xs:element name="BaseQuantity" substitutionGroup="Quantity">
+		<xs:complexType>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishName" type="xs:string" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="DerivedQuantity" substitutionGroup="Quantity">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="QuantityExp" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="Name" type="xs:NCName" use="required"/>
+						<xs:attribute name="Exponent" type="xs:int" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishName" type="xs:string" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PrefixTable">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Prefix" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishName" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Prefix">
+		<xs:complexType>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishName" type="xs:string" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+			<xs:attribute name="Factor" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="UnitSystem">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Quantity" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="UnitBase" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+						<xs:attribute name="Name" type="xs:NCName" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishName" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="UnitBase" abstract="1"/>
+	<xs:element name="Unit" substitutionGroup="UnitBase">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="PrefixedUnits" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishSingular" type="xs:string" use="required"/>
+			<xs:attribute name="EnglishPlural" type="xs:string" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PrefixedUnits">
+		<xs:complexType>
+			<xs:attribute name="TableName" type="xs:NCName" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ScaledUnit" substitutionGroup="UnitBase">
+		<xs:complexType>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="EnglishSingular" type="xs:string" use="required"/>
+			<xs:attribute name="EnglishPlural" type="xs:string" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+			<xs:attribute name="Factor" type="xs:double" use="required"/>
+			<xs:attribute name="FactorRelativeTo" type="xs:NCName" use="required"/>
+			<xs:attribute name="Offset" type="xs:double" use="optional" default="0"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="UnitConversion">
+		<xs:complexType>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Quantity" type="xs:NCName" use="required"/>
+			<xs:attribute name="SourceUnitSystem" type="xs:NCName" use="required"/>
+			<xs:attribute name="TargetUnitSystem" type="xs:NCName" use="required"/>
+			<xs:attribute name="SourceUnit" type="xs:NCName" use="required"/>
+			<xs:attribute name="TargetUnit" type="xs:NCName" use="required"/>
+			<xs:attribute name="Factor" type="xs:double" use="required"/>
+			<xs:attribute name="Offset" type="xs:double" use="optional" default="0"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Constant">
+		<xs:complexType>
+			<xs:attribute ref="Reference" use="optional"/>
+			<xs:attribute name="Name" type="xs:NCName" use="required"/>
+			<xs:attribute name="Symbol" type="xs:string" use="optional"/>
+			<xs:attribute name="Value" type="xs:double" use="required"/>
+			<xs:attribute name="Quantity" type="xs:NCName" use="optional"/>
+			<xs:attribute name="UnitSystem" type="xs:NCName" use="optional"/>
+			<xs:attribute name="Unit" type="xs:NCName" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,460 @@
+﻿<#@ template  debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="NetFrameworkExtensions.dll" #>
+<#@ assembly name="T4Toolbox.10.0"#>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="NetFrameworkExtensions" #>
+<#@ include file="t4toolbox.tt" #>
+<#@ include file="Common.ttinclude" #>
+<#
+var templateFolder = Path.GetDirectoryName(Host.TemplateFile);
+var inputFilePath = Path.Combine(templateFolder, "Magnitudes.xml");
+var data = new PhysicalQuantities(inputFilePath);
+if (data.Context.Errors.Count > 0)
+{
+#>
+/*
+Data contains errors:
+<# foreach (var error in data.Context.Errors)
+{
+#>
+- <#= error #>
+<#	 
+} #>
+*/
+<# } else { 
+	new QuantitiesTemplate(data).RenderToFile("Quantities.cs");	
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace <#= ns #>
+{
+  /// <summary>
+  /// Define unit systems: <#= data.UnitSystems.ToStringList(", ", us => us.Name) #>
+  /// </summary>
+  public static partial class UnitSystems
+  {
+    public static readonly UnitConversionTable ConversionTable;
+
+<#	foreach (var unitSystem in data.UnitSystems)
+	{ 
+		new UnitSystemTemplate(unitSystem).RenderToFile(unitSystem.Name + ".cs");
+	} #>
+    #region [ Lookup ]
+    private static Dictionary<string, UnitSystem> allUnitSystems;
+    public static UnitSystem GetUnitSystem(string unitSystemName)
+    {
+      UnitSystem result;
+      if (allUnitSystems.TryGetValue(unitSystemName, out result))
+        return result;
+      return null;
+    }
+    public static IEnumerable<UnitSystem> AllUnitSystems
+    {
+      get
+      {
+        return allUnitSystems.Values;
+      }
+    }
+    public static IEnumerable<Unit> AllUnits
+    {
+      get
+      {
+        return AllUnitSystems.SelectMany(us => us.AllUnits);
+      }
+    }
+    #endregion [ Lookup ]
+
+    static UnitSystems()
+    {
+      ConversionTable = new UnitConversionTable();
+
+<#	foreach (var unitSystem in data.UnitSystems)
+	{ #>
+      UnitSystems.<#= unitSystem.Name #>.UnitSystem = <#= unitSystem.Name #>.Create(ConversionTable);
+<#	} #>
+
+<#	foreach (var unitConversion in data.UnitConversions)
+	{ #>
+      ConversionTable.AddConversion(new UnitConversion(<#= ns #>.UnitSystems.<#= unitConversion.TargetUnitSystem.Name #>.<#= unitConversion.TargetUnit.Parent.Quantity.Name #>.<#= unitConversion.TargetUnit.Name #>, <#= ns #>.UnitSystems.<#= unitConversion.SourceUnitSystem.Name #>.<#= unitConversion.SourceUnit.Parent.Quantity.Name #>.<#= unitConversion.SourceUnit.Name #>, <#= unitConversion.Factor #>, <#= unitConversion.Offset #>));
+<#	} #>
+
+      allUnitSystems = new Dictionary<string, UnitSystem>
+      {
+<#	foreach (var unitSystem in data.UnitSystems)
+	{ #>
+        { <#= unitSystem.Name #>.UnitSystem.Name, <#= unitSystem.Name #>.UnitSystem },
+<#	} #>
+      };
+    }
+    internal static int StaticLoadField = 0;
+  }
+}
+
+<# } #>
+<#+ 
+
+public static string ns = "PhysicalQuantities";
+
+public class QuantitiesTemplate : T4Toolbox.Template
+{
+	PhysicalQuantities data;
+	public QuantitiesTemplate(PhysicalQuantities data) { this.data = data; }
+	
+    public override string TransformText()
+    {		
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace <#= ns #>
+{
+  /// <summary>
+<#+ if (data.Reference != null) { #>
+  /// Reference: <#= data.Reference #>
+<#+ } #>
+  /// Define quantities: <#= data.Quantities.ToStringList(", ", q => q.Name) #>
+  /// </summary>
+  public static partial class Quantities
+  {
+    #region [ Base Quantities ]
+<#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
+	{ #>
+<#+ if (quantity.Reference != null) { #>
+    /// <summary>
+    /// Reference: <#= quantity.Reference #>
+    /// </summary>
+<#+ } #>
+    public static readonly BaseQuantity <#= quantity.Name #>;
+<#+	} #>
+    #endregion [ Base Quantities ]
+
+    #region [ Derived Quantities ]
+<#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
+	{ #>
+<#+ if (quantity.Reference != null) { #>
+    /// <summary>
+    /// Reference: <#= quantity.Reference #>
+    /// </summary>
+<#+ } #>
+    public static readonly DerivedQuantity <#= quantity.Name #>;
+<#+	} #>
+    #endregion [ Derived Quantities ]
+	
+    #region [ Lookup ]
+    private static Dictionary<string, Quantity> allQuantities;
+    public static Quantity GetQuantity(string quantityName)
+    {
+      Quantity result;
+      if (allQuantities.TryGetValue(quantityName, out result))
+        return result;
+      return null;
+    }
+    public static IEnumerable<Quantity> AllQuantities
+    {
+      get
+      {
+        return allQuantities.Values;
+      }
+    }
+    #endregion [ Lookup ]
+
+    static Quantities()
+    {
+      #region [ Base Quantities ]
+<#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
+	{ #>
+      <#= quantity.Name #> = new BaseQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>);
+<#+	} #>
+      #endregion [ Base Quantities ]
+
+      #region [ Derived Quantities ]
+<#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
+	{ #>
+      <#= quantity.Name #> = new DerivedQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= quantity.BaseQuantities.ToStringList(", ", q => string.Format("new QuantityExp(Quantities.{0}, {1})", q.Quantity.Name, q.Exponent)) #>);
+<#+	} #>
+      #endregion [ Derived Quantities ]
+
+      #region [ Initialize All Quantities ]
+      allQuantities = new Dictionary<string, Quantity>
+      {
+<#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
+	{ #>
+        { Quantities.<#= quantity.Name #>.Name, Quantities.<#= quantity.Name #> },
+<#+	} #>
+<#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
+	{ #>
+        { Quantities.<#= quantity.Name #>.Name, Quantities.<#= quantity.Name #> },
+<#+	} #>
+      };
+      #endregion [ Initialize All Quantities ]
+    }
+  }
+}
+<#+
+	return this.GenerationEnvironment.ToString();
+	}
+}
+
+public class QuantityTemplate : T4Toolbox.Template
+{
+	UnitSystemQuantity quantity;
+	public QuantityTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; }
+	
+    public override string TransformText()
+    {
+		var unitSystem = quantity.Parent;
+		var data = unitSystem.Parent;
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace <#= ns #>
+{
+  public static partial class UnitSystems
+  {
+    public static partial class <#= unitSystem.Name #>
+    {
+      public static partial class <#= quantity.Name #>
+      {
+<#+	foreach (var unit in quantity.Units.OfType<Unit>())
+	{ #>
+<#+ if (unit.Reference != null) { #>
+        /// <summary>
+        /// Reference: <#= unit.Reference #>
+        /// </summary>
+<#+ } #>
+        public static BaseUnit <#= unit.Name #> { get; private set; }
+<#+	foreach (var prefixTable in unit.PrefixedUnits)
+	{ #>
+        // Prefix Table: <#= prefixTable.Table.Name #>
+<#+	foreach (var prefix in prefixTable.Table.Prefixes)
+	{ #>
+        public static ScaledUnit <#= prefix.Name #><#= unit.Name #> { get; private set; }
+<#+	} #>
+<#+	} #>
+<#+	} #>
+<#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
+	{ #>
+<#+ if (unit.Reference != null) { #>
+        /// <summary>
+        /// Reference: <#= unit.Reference #>
+        /// </summary>
+<#+ } #>
+        public static ScaledUnit <#= unit.Name #> { get; private set; }
+<#+ } #>
+
+        #region [ Lookup ]
+        private static Dictionary<string, Unit> allUnits;
+        public static Unit GetUnit(string unitName)
+        {
+          Unit result;
+          if (allUnits.TryGetValue(unitName, out result))
+            return result;
+          return null;
+        }
+        public static IEnumerable<Unit> AllUnits
+        {
+          get
+          {
+            return allUnits.Values;
+          }
+        }
+        #endregion [ Lookup ]
+
+        internal static void Initialize(UnitSystem unitSystem)
+        {
+<#+	foreach (var unit in quantity.Units.OfType<Unit>())
+	{ #>
+          <#= unit.Name #> = new BaseUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= ns #>.Quantities.<#= quantity.Name #>, unitSystem);
+<#+	foreach (var prefixTable in unit.PrefixedUnits)
+	{ #>
+<#+	foreach (var prefix in prefixTable.Table.Prefixes)
+	{ #>
+          <#= prefix.Name #><#= unit.Name #> = new ScaledUnit(@"<#= prefix.Name.AsVerbatim() #><#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= prefix.Symbol.AsVerbatim() #><#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.Name #>, <#= prefix.Factor #>, 0.0);
+<#+	} #>
+<#+	} #>
+<#+	} #>
+<#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
+	{ #>
+          <#= unit.Name #> = new ScaledUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.RelativeUnit.Name #>, <#= unit.Factor #>, <#= unit.Offset #>);
+<#+ } #>
+
+          allUnits = new Dictionary<string, Unit>
+          {
+<#+	foreach (var unit in quantity.Units.OfType<Unit>())
+	{ #>
+            { <#= unit.Name #>.Name, <#= unit.Name #> },
+<#+	foreach (var prefixTable in unit.PrefixedUnits)
+	{ #>
+<#+	foreach (var prefix in prefixTable.Table.Prefixes)
+	{ #>
+            { <#= prefix.Name #><#= unit.Name #>.Name, <#= prefix.Name #><#= unit.Name #> },
+<#+	} #>
+<#+	} #>
+<#+	} #>
+<#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
+	{ #>
+            { <#= unit.Name #>.Name, <#= unit.Name #> },
+<#+  } #>
+          };
+        }
+
+        static <#= quantity.Name #>()
+        {
+          var temp = <#= ns #>.UnitSystems.StaticLoadField;
+        }
+      }
+    }
+  }
+}
+<#+
+	return this.GenerationEnvironment.ToString();
+	}
+}
+
+public class UnitSystemTemplate : T4Toolbox.Template
+{
+	UnitSystem unitSystem;
+	public UnitSystemTemplate(UnitSystem unitSystem) { this.unitSystem = unitSystem; }
+	
+    public override string TransformText()
+    {
+		var data = unitSystem.Parent;
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace <#= ns #>
+{
+  public static partial class UnitSystems
+  {
+<#+ if (unitSystem.Reference != null) { #>
+    /// <summary>
+    /// Reference: <#= unitSystem.Reference #>
+    /// </summary>
+<#+ } #>
+    public static partial class <#= unitSystem.Name #>
+    {
+      public static UnitSystem UnitSystem { get; internal set; }
+
+<#+	foreach (var quantity in unitSystem.Quantities)
+	{ 
+		new QuantityTemplate(quantity).RenderToFile(unitSystem.Name + "." + quantity.Name + ".cs");
+	} /* foreach quantity*/ #>
+
+      #region [ Lookup ]
+      private static Dictionary<string, Quantity> allQuantities;
+      private static Dictionary<Quantity, Dictionary<string, Unit>> allUnits;
+      public static Quantity GetQuantity(string quantityName)
+      {
+        Quantity result;
+        if (allQuantities.TryGetValue(quantityName, out result))
+          return result;
+        return null;
+      }
+      public static Unit GetUnit(Quantity quantity, string unitName)
+      {
+        Dictionary<string, Unit> dict;
+        Unit result;
+        if (allUnits.TryGetValue(quantity, out dict))
+          if (dict.TryGetValue(unitName, out result))
+            return result;
+        return null;
+      }
+      public static IEnumerable<Unit> AllQuantityUnits(Quantity quantity)
+      {
+        Dictionary<string, Unit> dict;
+        if (allUnits.TryGetValue(quantity, out dict))
+          return dict.Values;
+        return Enumerable.Empty<Unit>();
+      }
+      public static IEnumerable<Unit> AllUnits
+      {
+        get
+        {
+          return allUnits.Values.SelectMany(d => d.Values);
+        }
+      }
+      #endregion [ Lookup ]
+	  
+      internal static UnitSystem Create(UnitConversionTable ConversionTable)
+      {
+        var unitSystem = new UnitSystem(@"<#= unitSystem.Name #>", ConversionTable);
+
+<#+	foreach (var quantity in unitSystem.Quantities)
+	{ #>
+        <#= quantity.Name #>.Initialize(unitSystem);
+<#+	} #>
+
+        allQuantities = new Dictionary<string, Quantity>
+        {
+<#+	foreach (var quantity in unitSystem.Quantities)
+	{ #>
+          { @"<#= quantity.Name #>", <#= ns #>.Quantities.<#= quantity.Name #> },
+<#+	} #>
+        };
+
+        allUnits = new Dictionary<Quantity, Dictionary<string, Unit>>(ReferenceEqualityComparer<Quantity>.Default)
+        {
+<#+	foreach (var quantity in unitSystem.Quantities)
+	{ #>
+          { 
+            <#= ns #>.Quantities.<#= quantity.Name #>, 
+            new Dictionary<string, Unit>
+            {
+<#+	foreach (var unit in quantity.Units.OfType<Unit>())
+	{ #>
+              { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #> },
+<#+	foreach (var prefixTable in unit.PrefixedUnits)
+	{ #>
+<#+	foreach (var prefix in prefixTable.Table.Prefixes)
+	{ #>
+              { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= prefix.Name #><#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= prefix.Name #><#= unit.Name #> },
+<#+	} #>
+<#+	} #>
+<#+	} #>
+<#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
+	{ #>
+              { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #> },
+<#+  } #>
+            }
+          },
+<#+	} #>
+        };
+
+        return unitSystem;
+      }	  
+
+      static <#= unitSystem.Name #>()
+      {
+        var temp = <#= ns #>.UnitSystems.StaticLoadField;
+      }
+    }
+  }
+}
+<#+
+	return this.GenerationEnvironment.ToString();
+	}
+}
+#>

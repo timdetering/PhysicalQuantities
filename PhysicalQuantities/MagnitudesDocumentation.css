@@ -1,0 +1,41 @@
+body
+{
+	font-family: Tahoma, Arial, Sans-Serif;
+	font-size: 1em;
+	margin: 1em;
+	background-color: #F0F8FF;
+	color: #004060;
+}
+h1 { font-size: 1.8em; }
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1em; }
+table
+{
+	border-collapse:collapse;
+	font-size: 1em;
+}
+table, tr, th, td
+{
+	border: 1px solid #004060;
+}
+th
+{
+	background-color: #004060;
+	color: #F0F8FF;
+}
+th, td
+{
+	padding: 2px 12px;
+}
+a[href], a:visited[href], a:link[href]
+{
+	color: blue;
+	text-decoration: none;
+}
+a:hover[href]
+{
+	text-decoration: underline;
+}

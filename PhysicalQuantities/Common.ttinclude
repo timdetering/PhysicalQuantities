@@ -1,0 +1,425 @@
+﻿<#+
+#region Classes for reading xml
+public class LoadContext
+{
+	public List<string> Errors = new List<string>();
+	public List<Tup<int, Action<PhysicalQuantities>, XObject>> PostActions = new List<Tup<int, Action<PhysicalQuantities>, XObject>>();
+	
+	public bool HasErrors { get { return Errors.Count > 0; } }
+	
+	public void NotifyError(string message, XObject node = null)
+	{
+		var lineInfo = node as IXmlLineInfo;
+		if (lineInfo != null && lineInfo.HasLineInfo())
+			message = message + string.Format(": on line {0} col {1}", lineInfo.LineNumber, lineInfo.LinePosition);
+		Errors.Add(message);
+	}
+	
+	public void AddAction(Action<PhysicalQuantities> action, XObject node = null, int priority = 0)
+	{
+		PostActions.Add(new Tup<int, Action<PhysicalQuantities>, XObject>(priority, action, node));
+	}
+	
+	public void RunActions(PhysicalQuantities root)
+	{
+		foreach (var tup in PostActions.OrderBy(p => p.Item1))
+		{
+			try
+			{
+				tup.Item2(root);
+			}
+			catch(Exception ex)
+			{
+				NotifyError(ex.Message, tup.Item3);
+			}
+			if (HasErrors) break;
+		}
+	}
+}
+
+public class PhysicalQuantities
+{
+	public LoadContext Context = new LoadContext();
+	
+	public PhysicalQuantities(string inputFile)
+		: this(XDocument.Load(inputFile, LoadOptions.SetLineInfo))
+	{
+	}
+	public PhysicalQuantities(XDocument doc)
+		: this(doc.Root)
+	{
+	}
+	public PhysicalQuantities(XElement element)
+	{
+		Load(element, Context);
+	}
+
+	public string Reference { get; set; }
+	public List<QuantityBase> Quantities { get; set; }
+	public List<PrefixTable> PrefixTables { get; set; }
+	public List<UnitSystem> UnitSystems { get; set; }
+	public List<UnitConversion> UnitConversions { get; set; }
+	
+	private void Load(XElement element, LoadContext ctx)
+	{
+		Reference = (string)element.Attribute("Reference");
+		
+		Quantities = new List<QuantityBase>();
+		var xQuantities = element.Element("Quantities");
+		foreach (var xQuantity in xQuantities.Elements())
+		{
+			Quantities.Add(QuantityBase.Load(this, xQuantity, ctx));
+			if (ctx.HasErrors) return;
+		}
+		PrefixTables = new List<PrefixTable>();
+		var xPrefixTables = element.Element("PrefixTables");
+		foreach (var xPrefixTable in xPrefixTables.Elements("PrefixTable"))
+		{
+			PrefixTables.Add(new PrefixTable(this, xPrefixTable, ctx));
+			if (ctx.HasErrors) return;
+		}
+		UnitSystems = new List<UnitSystem>();
+		var xUnitSystems = element.Element("UnitSystems");
+		foreach (var xUnitSystem in xUnitSystems.Elements("UnitSystem"))
+		{
+			UnitSystems.Add(new UnitSystem(this, xUnitSystem, ctx));
+			if (ctx.HasErrors) return;
+		}
+		UnitConversions = new List<UnitConversion>();
+		var xUnitConversions = element.Element("UnitConversions");
+		foreach (var xUnitConversion in xUnitConversions.Elements("UnitConversion"))
+		{
+			UnitConversions.Add(new UnitConversion(this, xUnitConversion, ctx));
+			if (ctx.HasErrors) return;
+		}
+		ctx.RunActions(this);
+	}
+}
+
+public abstract class QuantityBase
+{
+	public QuantityBase(PhysicalQuantities parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("QuantityBase missing Name attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+		Reference = (string)element.Attribute("Reference");
+		if (element.Attribute("Symbol") != null)
+			Symbol = (string)element.Attribute("Symbol");
+		if (ctx.HasErrors) return;
+	}
+	
+	public PhysicalQuantities Parent { get;set; }
+	public string Reference { get; set; }
+	public string Name { get; set; }
+	public string Symbol { get; set; }
+	
+	public static QuantityBase Load(PhysicalQuantities parent, XElement element, LoadContext ctx)
+	{
+		if (element.Name == "BaseQuantity")
+			return new BaseQuantity(parent, element, ctx);
+		if (element.Name == "DerivedQuantity")
+			return new DerivedQuantity(parent, element, ctx);
+		ctx.NotifyError("Unknown quantity type", element);
+		return null;
+	}
+}
+public class BaseQuantity : QuantityBase
+{
+	public BaseQuantity(PhysicalQuantities parent, XElement element, LoadContext ctx)
+		: base(parent, element, ctx)
+	{
+	}
+}
+public class DerivedQuantity : QuantityBase
+{
+	public DerivedQuantity(PhysicalQuantities parent, XElement element, LoadContext ctx)
+		: base(parent, element, ctx)
+	{
+		if (ctx.HasErrors) return;
+		
+		BaseQuantities = new List<QuantityExp>();
+		foreach (var xQuantityExp in element.Elements("QuantityExp"))
+		{
+			BaseQuantities.Add(new QuantityExp(this, xQuantityExp, ctx));
+			if (ctx.HasErrors) return;
+		}
+	}
+	
+	public List<QuantityExp> BaseQuantities { get; set; }
+}
+public class QuantityExp
+{
+	public QuantityExp(DerivedQuantity parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("QuantityExp missing Name attribute", element);
+		if (element.Attribute("Exponent") == null)
+			ctx.NotifyError("QuantityExp missing Exponent attribute", element);
+		if (ctx.HasErrors) return;
+		
+		QuantityName = (string)element.Attribute("Name");
+		Exponent = (int)element.Attribute("Exponent");
+		
+		ctx.AddAction(r => this.Quantity = r.Quantities.Single(q => q.Name == this.QuantityName));
+	}
+	
+	public DerivedQuantity Parent { get; set; }
+	public string QuantityName { get; set; }
+	public QuantityBase Quantity { get; set; }
+	
+	public int Exponent { get; set; }
+}
+public class PrefixTable
+{
+	public PrefixTable(PhysicalQuantities parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("PrefixTable missing Name attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+		Reference = (string)element.Attribute("Reference");
+		
+		Prefixes = new List<Prefix>();
+		foreach (var xPrefix in element.Elements("Prefix"))
+		{
+			Prefixes.Add(new Prefix(this, xPrefix, ctx));
+			if (ctx.HasErrors) return;
+		}
+	}
+	
+	public PhysicalQuantities Parent { get; set; }
+	public string Reference { get; set; }
+	public string Name { get; set; }
+	public List<Prefix> Prefixes { get; set; }
+}
+public class Prefix
+{
+	public Prefix(PrefixTable parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("Prefix missing Name attribute", element);
+		if (element.Attribute("Factor") == null)
+			ctx.NotifyError("Prefix missing Factor attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+		Symbol = (string)element.Attribute("Symbol");
+		Factor = (double)element.Attribute("Factor");
+	}
+	
+	public PrefixTable Parent { get; set; }
+	public string Name { get; set; }
+	public string Symbol { get; set; }
+	public double Factor { get; set; }
+}
+public class UnitSystem
+{
+	public UnitSystem(PhysicalQuantities parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("UnitSystem missing Name attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+		Reference = (string)element.Attribute("Reference");
+		
+		Quantities = new List<UnitSystemQuantity>();
+		foreach (var xElem in element.Elements("Quantity"))
+		{
+			Quantities.Add(new UnitSystemQuantity(this, xElem, ctx));
+			if (ctx.HasErrors) return;
+		}
+	}
+	
+	public PhysicalQuantities Parent { get; set; }
+	public string Reference { get; set; }
+	public string Name { get; set; }
+	public List<UnitSystemQuantity> Quantities { get; set; }
+}
+
+public class UnitSystemQuantity
+{
+	public UnitSystemQuantity(UnitSystem parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("UnitSystemQuantity missing Name attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+
+		Units = new List<UnitBase>();
+		foreach (var xElem in element.Elements())
+		{
+			Units.Add(UnitBase.Load(this, xElem, ctx));
+			if (ctx.HasErrors) return;
+		}
+
+		ctx.AddAction(r => this.Quantity = r.Quantities.Single(t => t.Name == this.Name), element);
+	}
+	
+	public UnitSystem Parent { get; set; }
+	public string Name { get; set; }
+	public QuantityBase Quantity { get; set; }
+	public List<UnitBase> Units { get; set; }
+}
+public abstract class UnitBase
+{
+	public UnitBase(UnitSystemQuantity parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Name") == null)
+			ctx.NotifyError("Unit missing Name attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Name = (string)element.Attribute("Name");
+		Symbol = (string)element.Attribute("Symbol");
+		Reference = (string)element.Attribute("Reference");
+	}
+	
+	public string Reference { get; set; }
+	public string Name { get; set; }
+	public string Symbol { get; set; }
+	public UnitSystemQuantity Parent { get; set; }
+	
+	public static UnitBase Load(UnitSystemQuantity parent, XElement element, LoadContext ctx)
+	{
+		if (element.Name == "Unit")
+			return new Unit(parent, element, ctx);
+		if (element.Name == "ScaledUnit")
+			return new ScaledUnit(parent, element, ctx);
+		ctx.NotifyError("Unknown unit type", element);
+		return null;
+	}
+}
+public class Unit : UnitBase
+{
+	public Unit(UnitSystemQuantity parent, XElement element, LoadContext ctx)
+		: base(parent, element, ctx)
+	{
+		if (ctx.HasErrors) return;
+
+		PrefixedUnits = new List<PrefixedUnit>();
+		foreach (var xElem in element.Elements("PrefixedUnits"))
+		{
+			PrefixedUnits.Add(new PrefixedUnit(this, xElem, ctx));
+			if (ctx.HasErrors) return;
+		}
+	}
+	
+	public List<PrefixedUnit> PrefixedUnits { get; set; }
+}
+public class PrefixedUnit
+{
+	public PrefixedUnit(Unit parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("TableName") == null)
+			ctx.NotifyError("PrefixedUnit missing TableName attribute", element);
+		if (ctx.HasErrors) return;
+		
+		TableName = (string)element.Attribute("TableName");
+		
+		ctx.AddAction(r => this.Table = r.PrefixTables.Single(t => t.Name == TableName), element);
+	}
+	
+	public string TableName { get; set; }
+	public PrefixTable Table { get; set; }
+	public Unit Parent { get; set; }
+}
+public class ScaledUnit : UnitBase
+{
+	public ScaledUnit(UnitSystemQuantity parent, XElement element, LoadContext ctx)
+		: base(parent, element, ctx)
+	{
+		if (ctx.HasErrors) return;
+
+		if (element.Attribute("Factor") == null)
+			ctx.NotifyError("ScaledUnit missing Factor attribute", element);
+		if (element.Attribute("FactorRelativeTo") == null)
+			ctx.NotifyError("ScaledUnit missing FactorRelativeTo attribute", element);
+		
+		if (ctx.HasErrors) return;
+		
+		Factor = (double)element.Attribute("Factor");
+		RelativeUnitName = (string)element.Attribute("FactorRelativeTo");
+
+		ctx.AddAction(r => this.RelativeUnit = Parent.Units.Single(t => t.Name == RelativeUnitName), element);
+	}
+	
+	public double Factor { get; set; }
+	public double Offset { get; set; }
+	public string RelativeUnitName { get; set; }
+	public UnitBase RelativeUnit { get; set; }
+}
+public class UnitConversion
+{
+	public UnitConversion(PhysicalQuantities parent, XElement element, LoadContext ctx)
+	{
+		Parent = parent;
+		if (element.Attribute("Factor") == null)
+			ctx.NotifyError("UnitConversion missing Factor attribute", element);
+		if (element.Attribute("Quantity") == null)
+			ctx.NotifyError("UnitConversion missing Quantity attribute", element);
+		if (element.Attribute("SourceUnitSystem") == null)
+			ctx.NotifyError("UnitConversion missing SourceUnitSystem attribute", element);
+		if (element.Attribute("TargetUnitSystem") == null)
+			ctx.NotifyError("UnitConversion missing TargetUnitSystem attribute", element);
+		if (element.Attribute("SourceUnit") == null)
+			ctx.NotifyError("UnitConversion missing SourceUnit attribute", element);
+		if (element.Attribute("TargetUnit") == null)
+			ctx.NotifyError("UnitConversion missing TargetUnit attribute", element);
+		if (ctx.HasErrors) return;
+		
+		Reference = (string)element.Attribute("Reference");
+		Factor = (double)element.Attribute("Factor");
+		if (element.Attribute("Offset") != null)
+			Offset = (double)element.Attribute("Offset");
+		QuantityName = (string)element.Attribute("Quantity");
+		SourceUnitSystemName = (string)element.Attribute("SourceUnitSystem");
+		TargetUnitSystemName = (string)element.Attribute("TargetUnitSystem");
+		SourceUnitName = (string)element.Attribute("SourceUnit");
+		TargetUnitName = (string)element.Attribute("TargetUnit");
+		
+		ctx.AddAction(r => 
+		{
+			this.Quantity = r.Quantities.Single(t => t.Name == this.QuantityName);
+			this.SourceUnitSystem = r.UnitSystems.Single(t => t.Name == this.SourceUnitSystemName);
+			this.TargetUnitSystem = r.UnitSystems.Single(t => t.Name == this.TargetUnitSystemName);
+			this.SourceUnit = this.SourceUnitSystem.Quantities
+				.Single(t => t.Name == this.QuantityName)
+				.Units
+				.Single(u => u.Name == this.SourceUnitName);
+			this.TargetUnit = this.TargetUnitSystem.Quantities
+				.Single(t => t.Name == this.QuantityName)
+				.Units
+				.Single(u => u.Name == this.TargetUnitName);
+		}, element);
+	}
+	
+	public PhysicalQuantities Parent { get;set; }
+	public string Reference { get; set; }
+	public double Factor { get; set; }
+	public double Offset { get; set; }
+	public string QuantityName { get; set; }
+	public string SourceUnitSystemName { get; set; }
+	public string TargetUnitSystemName { get; set; }
+	public string SourceUnitName { get; set; }
+	public string TargetUnitName { get; set; }
+	public QuantityBase Quantity { get; set; }
+	public UnitSystem SourceUnitSystem { get; set; }
+	public UnitSystem TargetUnitSystem { get; set; }
+	public UnitBase SourceUnit { get; set; }
+	public UnitBase TargetUnit { get; set; }
+}
+#endregion
+#>
