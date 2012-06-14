@@ -74,13 +74,13 @@
     <Compile Include="TestLength.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Shadow Include="Referencias de prueba\PhysicalQuantities.accessor" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PhysicalQuantities\PhysicalQuantities.csproj">
       <Project>{FD805312-EA03-494C-B45A-A0BFFC62918D}</Project>
       <Name>PhysicalQuantities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Referencias de prueba\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

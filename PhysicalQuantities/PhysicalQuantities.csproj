@@ -49,6 +49,9 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NetFrameworkExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Lib\NetFrameworkExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -128,6 +131,90 @@
     <Compile Include="QuantityExp.cs" />
     <Compile Include="QuantityValue.cs" />
     <Compile Include="ReferenceEqualityComparer.cs" />
+    <Compile Include="RSI.Acceleration.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Angle.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Area.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Dimensionless.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.ElectricCapacitance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.ElectricConductance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.ElectricCurrent.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.ElectricResistance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Energy.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Force.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Frequency.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Illuminance.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Length.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.LuminousFlux.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.LuminousIntensity.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.MagneticField.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.MagneticFlux.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Mass.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Momentum.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Power.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Pressure.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Speed.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Temperature.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Time.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Voltage.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.Volume.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI.VolumetricFlow.cs">
+      <DependentUpon>MagnitudesGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="ScaledUnit.cs" />
     <Compile Include="SI.AbsorbedDose.cs">
       <DependentUpon>MagnitudesGenerator.tt</DependentUpon>

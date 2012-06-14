@@ -82,7 +82,7 @@ namespace PhysicalQuantities
           AttoKelvin = new ScaledUnit(@"AttoKelvin", @"aK", Kelvin, 1E-18, 0.0);
           ZeptoKelvin = new ScaledUnit(@"ZeptoKelvin", @"zK", Kelvin, 1E-21, 0.0);
           YoctoKelvin = new ScaledUnit(@"YoctoKelvin", @"yK", Kelvin, 1E-24, 0.0);
-          Celsius = new ScaledUnit(@"Celsius", @"°C", Kelvin, 1, 0);
+          Celsius = new ScaledUnit(@"Celsius", @"°C", Kelvin, 1, -273.15);
 
           allUnits = new Dictionary<string, Unit>
           {

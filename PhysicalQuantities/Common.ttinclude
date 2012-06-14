@@ -351,6 +351,8 @@ public class ScaledUnit : UnitBase
 		if (ctx.HasErrors) return;
 		
 		Factor = (double)element.Attribute("Factor");
+		if (element.Attribute("Offset") != null)
+			Offset = (double)element.Attribute("Offset");
 		RelativeUnitName = (string)element.Attribute("FactorRelativeTo");
 
 		ctx.AddAction(r => this.RelativeUnit = Parent.Units.Single(t => t.Name == RelativeUnitName), element);

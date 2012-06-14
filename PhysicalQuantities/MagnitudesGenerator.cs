@@ -6,7 +6,7 @@ using System.Text;
 namespace PhysicalQuantities
 {
   /// <summary>
-  /// Define unit systems: SI, Imperial, US
+  /// Define unit systems: SI, RSI, Imperial, US
   /// </summary>
   public static partial class UnitSystems
   {
@@ -42,6 +42,7 @@ namespace PhysicalQuantities
       ConversionTable = new UnitConversionTable();
 
       UnitSystems.SI.UnitSystem = SI.Create(ConversionTable);
+      UnitSystems.RSI.UnitSystem = RSI.Create(ConversionTable);
       UnitSystems.Imperial.UnitSystem = Imperial.Create(ConversionTable);
       UnitSystems.US.UnitSystem = US.Create(ConversionTable);
 
@@ -61,22 +62,33 @@ namespace PhysicalQuantities
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.VolumetricFlow.CubicFootPerSecond, PhysicalQuantities.UnitSystems.SI.VolumetricFlow.CubicMetrePerSecond, 0.028316846592, 0));
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.AngularVelocity.DegreesPerSecond, PhysicalQuantities.UnitSystems.SI.AngularVelocity.RadianPerSecond, 0.0174532925199433, 0));
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.Density.PoundPerCubicFoot, PhysicalQuantities.UnitSystems.SI.Density.KilogramPerCubicMetre, 16.018463306, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Dimensionless.Unity, PhysicalQuantities.UnitSystems.SI.Dimensionless.Unity, 1, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Length.Foot, PhysicalQuantities.UnitSystems.SI.Length.Metre, 0.3048, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Mass.Pound, PhysicalQuantities.UnitSystems.SI.Mass.Kilogram, 0.45359237, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Time.Second, PhysicalQuantities.UnitSystems.SI.Time.Second, 1, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Temperature.Farenheit, PhysicalQuantities.UnitSystems.SI.Temperature.Kelvin, 1.8, -459.66666667));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Angle.Degree, PhysicalQuantities.UnitSystems.SI.Angle.Radian, 0.0174532925199433, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Force.PoundForce, PhysicalQuantities.UnitSystems.SI.Force.Newton, 4.4482216, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Pressure.PoundPerSquareFoot, PhysicalQuantities.UnitSystems.SI.Pressure.Pascal, 47.880258889, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Energy.FootPoundForce, PhysicalQuantities.UnitSystems.SI.Energy.Joule, 1.3558179483314, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Power.FootPoundPerSecond, PhysicalQuantities.UnitSystems.SI.Power.Watt, 1.3558179483314, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Area.SquareFoot, PhysicalQuantities.UnitSystems.SI.Area.SquareMetre, 0.09290304, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Volume.CubicFoot, PhysicalQuantities.UnitSystems.SI.Volume.CubicMetre, 0.028316846592, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Speed.FootPerSecond, PhysicalQuantities.UnitSystems.SI.Speed.MetrePerSecond, 0.3048, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.VolumetricFlow.CubicFootPerSecond, PhysicalQuantities.UnitSystems.SI.VolumetricFlow.CubicMetrePerSecond, 0.028316846592, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.AngularVelocity.DegreesPerSecond, PhysicalQuantities.UnitSystems.SI.AngularVelocity.RadianPerSecond, 0.0174532925199433, 0));
-      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.US.Density.PoundPerCubicFoot, PhysicalQuantities.UnitSystems.SI.Density.KilogramPerCubicMetre, 16.018463306, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Dimensionless.Unity, PhysicalQuantities.UnitSystems.SI.Dimensionless.Unity, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Length.Metre, PhysicalQuantities.UnitSystems.SI.Length.Metre, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Mass.Kilogram, PhysicalQuantities.UnitSystems.SI.Mass.Kilogram, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Time.Second, PhysicalQuantities.UnitSystems.SI.Time.Second, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Temperature.Kelvin, PhysicalQuantities.UnitSystems.SI.Temperature.Kelvin, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.ElectricCurrent.Ampere, PhysicalQuantities.UnitSystems.SI.ElectricCurrent.Ampere, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.LuminousIntensity.Candela, PhysicalQuantities.UnitSystems.SI.LuminousIntensity.Candela, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Frequency.Hertz, PhysicalQuantities.UnitSystems.SI.Frequency.Hertz, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Angle.Radian, PhysicalQuantities.UnitSystems.SI.Angle.Radian, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Force.Newton, PhysicalQuantities.UnitSystems.SI.Force.Newton, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Pressure.Pascal, PhysicalQuantities.UnitSystems.SI.Pressure.Pascal, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Energy.Joule, PhysicalQuantities.UnitSystems.SI.Energy.Joule, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Power.Watt, PhysicalQuantities.UnitSystems.SI.Power.Watt, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Voltage.Volt, PhysicalQuantities.UnitSystems.SI.Voltage.Volt, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.ElectricCapacitance.Farad, PhysicalQuantities.UnitSystems.SI.ElectricCapacitance.Farad, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.ElectricResistance.Ohm, PhysicalQuantities.UnitSystems.SI.ElectricResistance.Ohm, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.ElectricConductance.Siemens, PhysicalQuantities.UnitSystems.SI.ElectricConductance.Siemens, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.MagneticFlux.Weber, PhysicalQuantities.UnitSystems.SI.MagneticFlux.Weber, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.MagneticField.Tesla, PhysicalQuantities.UnitSystems.SI.MagneticField.Tesla, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.LuminousFlux.Lumen, PhysicalQuantities.UnitSystems.SI.LuminousFlux.Lumen, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Illuminance.Lux, PhysicalQuantities.UnitSystems.SI.Illuminance.Lux, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Area.SquareMetre, PhysicalQuantities.UnitSystems.SI.Area.SquareMetre, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Volume.CubicMetre, PhysicalQuantities.UnitSystems.SI.Volume.CubicMetre, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Speed.MetrePerSecond, PhysicalQuantities.UnitSystems.SI.Speed.MetrePerSecond, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Acceleration.MetrePerSecondSquared, PhysicalQuantities.UnitSystems.SI.Acceleration.MetrePerSecondSquared, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.VolumetricFlow.CubicMetrePerSecond, PhysicalQuantities.UnitSystems.SI.VolumetricFlow.CubicMetrePerSecond, 1, 0));
+      ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.RSI.Momentum.NewtonSecond, PhysicalQuantities.UnitSystems.SI.Momentum.NewtonSecond, 1, 0));
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.Dimensionless.Unity, PhysicalQuantities.UnitSystems.US.Dimensionless.Unity, 1, 0));
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.Length.Foot, PhysicalQuantities.UnitSystems.US.Length.Foot, 1, 0));
       ConversionTable.AddConversion(new UnitConversion(PhysicalQuantities.UnitSystems.Imperial.Mass.Pound, PhysicalQuantities.UnitSystems.US.Mass.Pound, 1, 0));
@@ -97,6 +109,7 @@ namespace PhysicalQuantities
       allUnitSystems = new Dictionary<string, UnitSystem>
       {
         { SI.UnitSystem.Name, SI.UnitSystem },
+        { RSI.UnitSystem.Name, RSI.UnitSystem },
         { Imperial.UnitSystem.Name, Imperial.UnitSystem },
         { US.UnitSystem.Name, US.UnitSystem },
       };

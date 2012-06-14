@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NetFrameworkExtensions;
 
 namespace PhysicalQuantities
 {
@@ -26,6 +27,14 @@ namespace PhysicalQuantities
     {
       if (conversion == null) throw new ArgumentNullException("conversion");
       unitConversions.Add(conversion);
+      ClearCache();
+    }
+
+    public void ClearCache()
+    {
+      cachedFromBaseConversions.Clear();
+      cachedToBaseConversions.Clear();
+      cachedConversions.Clear();
     }
 
     public Func<double, double> GetConversion(Unit fromUnit, Unit toUnit)
@@ -95,6 +104,35 @@ namespace PhysicalQuantities
     {
       var result = GetCachedFromBaseConversion(unit);
       if (result != null) return result;
+      List<Func<double, double>> conversionList = new List<Func<double, double>>();
+      var units = new HashSet<Unit>();
+      var cur = unit;
+      while (true)
+      {
+        if (units.Contains(cur))
+          throw new InvalidOperationException("Unit definition contains cycles: " + unit);
+        units.Add(cur);
+        if (cur is BaseUnit)
+        {
+          Func<double, double> func = v => conversionList.Aggregate(v, (val, f) => f(val));
+          result = Tuple.Create(cur, func);
+          break;
+        }
+        else
+        {
+          var scaledUnit = (ScaledUnit)cur;
+          conversionList.Add(v => v * scaledUnit.Factor + scaledUnit.Offset);
+          cur = scaledUnit.BaseUnit;
+        }
+      }
+      if (result == null) throw new InvalidOperationException("Cannot convert to base unit: " + unit);
+      cachedFromBaseConversions[unit] = result;
+      return result;
+    }
+    private Tuple<Unit, Func<double, double>> FindConversionToBaseUnit2(Unit unit)
+    {
+      var result = GetCachedFromBaseConversion(unit);
+      if (result != null) return result;
       double factor = 1.0;
       double offset = 0.0;
       var units = new HashSet<Unit>();
@@ -123,6 +161,36 @@ namespace PhysicalQuantities
     }
 
     private Tuple<Unit, Func<double, double>> FindConversionFromBaseUnit(Unit unit)
+    {
+      var result = GetCachedToBaseConversion(unit);
+      if (result != null) return result;
+      List<Func<double, double>> conversionList = new List<Func<double, double>>();
+      var units = new HashSet<Unit>();
+      var cur = unit;
+      while (true)
+      {
+        if (units.Contains(cur))
+          throw new InvalidOperationException("Unit definition contains cycles: " + unit);
+        units.Add(cur);
+        if (cur is BaseUnit)
+        {
+          conversionList.Reverse();
+          Func<double, double> func = v => conversionList.Aggregate(v, (val, f) => f(val));
+          result = Tuple.Create(cur, func);
+          break;
+        }
+        else
+        {
+          var scaledUnit = (ScaledUnit)cur;
+          conversionList.Add(v => (v - scaledUnit.Offset) / scaledUnit.Factor);
+          cur = scaledUnit.BaseUnit;
+        }
+      }
+      if (result == null) return null;
+      cachedToBaseConversions[unit] = result;
+      return result;
+    }
+    private Tuple<Unit, Func<double, double>> FindConversionFromBaseUnit2(Unit unit)
     {
       var result = GetCachedToBaseConversion(unit);
       if (result != null) return result;
@@ -157,55 +225,32 @@ namespace PhysicalQuantities
     {
       var result = GetCachedConversion(fromBaseUnit, toBaseUnit);
       if (result != null) return result;
-      foreach (var conversion in unitConversions)
-      {
-        var conv = conversion;
-        if (fromBaseUnit == conv.SourceUnit && toBaseUnit == conv.TargetUnit)
-        {
-          result = v => v * conv.Factor + conv.Offset;
-          break;
-        }
-        if (fromBaseUnit == conv.TargetUnit && toBaseUnit == conv.SourceUnit)
-        {
-          result = v => (v - conv.Offset) / conv.Factor;
-          break;
-        }
-      }
-      /*
-      if (result == null)
-      {
-        if (fromBaseUnit.Quantity is DerivedQuantity)
-        {
-          List<Func<double, double>> appliedConversions = new List<Func<double, double>>();
-          foreach (var exp in fromBaseUnit.Quantity.NormalizedQuantity.Exponents)
-          {
-            var fromUnit = fromBaseUnit.UnitSystem.UnitSystemQuantities.Single(x => x.Quantity == exp.Quantity).Units.OfType<BaseUnit>().First();
-            var toUnit = toBaseUnit.UnitSystem.UnitSystemQuantities.Single(x => x.Quantity == exp.Quantity).Units.OfType<BaseUnit>().First();
-            if (exp.Exponent > 0)
-            {
-              var partialConvertion = GetConversion(fromUnit, toUnit);
-              for (int i = 1; i <= exp.Exponent; i++)
-              {
-                appliedConversions.Add(partialConvertion);
-              }
-            }
-            else
-            {
-              var partialConvertion = GetConversion(toUnit, fromUnit);
-              Func<double, double> completeConversion = IdentityConversion;
-              for (int i = -1; i >= exp.Exponent; i--)
-              {
-                appliedConversions.Add(partialConvertion);
-              }
-            }
-          }
-          result = v => appliedConversions.Aggregate(1.0, (a, func) => func(a));
-        }
-      }
-      */
+      var path = FindShortestPath(fromBaseUnit, toBaseUnit);
+      if (path == null) throw new InvalidOperationException("There is no defined path to convert from " + fromBaseUnit + " to " + toBaseUnit);
+      result = v => path.Aggregate(v, (val, f) => f(val));
+
       if (result != null)
         cachedConversions[Tuple.Create(fromBaseUnit, toBaseUnit)] = result;
       return result;
+    }
+
+    private List<Func<double, double>> FindShortestPath(Unit fromBaseUnit, Unit toBaseUnit)
+    {
+      var path = fromBaseUnit.FindShortestPath(FSPGetArcs, u => u == toBaseUnit);
+      if (path == null) return null;
+      return path.Select(t => t.Arc).ToList();
+    }
+    private IEnumerable<Tup<Unit, Func<double, double>, Unit>> FSPGetArcs(Unit fromUnit)
+    {
+      foreach (var conversion in unitConversions)
+      {
+        var conv = conversion;
+        Func<double, double> func;
+        if (conv.SourceUnit == fromUnit)
+          yield return Tup.Create(fromUnit, func = v => v * conv.Factor + conv.Offset, conv.TargetUnit);
+        else if (conv.TargetUnit == fromUnit)
+          yield return Tup.Create(fromUnit, func = v => (v - conv.Offset) / conv.Factor, conv.SourceUnit);
+      }
     }
   }
 }

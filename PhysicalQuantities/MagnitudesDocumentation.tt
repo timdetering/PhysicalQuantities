@@ -30,11 +30,11 @@
 				quantitiesState = 1 - quantitiesState;
 				return false;
 			});
-			var ucState = 1;
-			$("#SHUnitConversions").click(function(){
-				if (ucState == 1) { $(this).text("[+]"); $("#UnitConversions").hide(); }
-				else { $(this).text("[-]"); $("#UnitConversions").show(); }
-				ucState = 1 - ucState;
+			var prefixesState = 1;
+			$("#SHPrefixTables").click(function(){
+				if (prefixesState == 1) { $(this).text("[+]"); $("#PrefixTables").hide(); }
+				else { $(this).text("[-]"); $("#PrefixTables").show(); }
+				prefixesState = 1 - prefixesState;
 				return false;
 			});
 			var usState = 1;
