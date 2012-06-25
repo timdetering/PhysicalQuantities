@@ -1,0 +1,138 @@
+﻿<#@ template  debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="NetFrameworkExtensions.dll" #>
+<#@ assembly name="T4Toolbox.10.0"#>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="NetFrameworkExtensions" #>
+<#@ include file="t4toolbox.tt" #>
+<#@ include file="..\PhysicalQuantities\Common.ttinclude" #>
+<#
+var templateFolder = Path.GetDirectoryName(Host.TemplateFile);
+var inputFilePath = Path.Combine(templateFolder, @"..\PhysicalQuantities\Magnitudes.xml");
+var data = new PhysicalQuantities(inputFilePath);
+if (data.Context.Errors.Count > 0)
+{
+#>
+/*
+Data contains errors:
+<# foreach (var error in data.Context.Errors)
+{
+#>
+- <#= error #>
+<#	 
+} #>
+*/
+<# } else { 
+	// Generate tests: UnitSystem_Quantity_Tests
+	foreach (UnitSystemQuantity usq in data.UnitSystems.SelectMany(u => u.Quantities))
+	{
+		string fileName = string.Format("{0}_{1}_Tests.cs", usq.Parent.Name, usq.Name);
+		new TestConversionsTemplate(usq).RenderToFile(fileName);
+	}
+#>
+
+<# } #>
+<#+
+public const double FromValue = 10.0;
+
+public class TestConversionsTemplate : T4Toolbox.Template
+{
+	UnitSystemQuantity quantity;
+	public TestConversionsTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; }
+	
+    public override string TransformText()
+    {
+		UnitSystem unitSystem = quantity.Parent;
+		PhysicalQuantities root = unitSystem.Parent;
+#>
+using PhysicalQuantities;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+namespace PhysicalQuantities.Tests
+{
+    
+  [TestClass()]
+  public class <#= unitSystem.Name #>_<#= quantity.Name #>_Tests
+  {
+<#+ foreach (Unit unit in quantity.Units.OfType<Unit>()) { #>
+<#+ foreach (ScaledUnit toUnit in unit.GetAllUnits().OfType<ScaledUnit>()) { 
+		var expectedValue = (FromValue - toUnit.Offset) / toUnit.Factor;
+		var exp = (int)Math.Round(Math.Log10(Math.Abs(expectedValue))) - 8;
+#>
+    [TestMethod()]
+    public void ConvertFrom<#= unit.Name #>To<#= toUnit.Name #>()
+    {
+      double delta = 1E<#= exp #>;
+      var fromUnit = PhysicalQuantities.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Quantity.Name #>.<#= unit.Name #>;
+      var fromValue = fromUnit.Times(<#= FromValue #>);
+      var toUnit = PhysicalQuantities.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Quantity.Name #>.<#= toUnit.Name #>;
+      var toValue = fromValue.To(toUnit);
+      var expectedValue = toUnit.Times(<#= expectedValue #>);
+      //Assert.AreEqual(expectedValue, toValue, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= unitSystem.Name #>]");
+      Assert.AreEqual(expectedValue.Value, toValue.Value, delta, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= unitSystem.Name #>]");
+      Assert.AreEqual(expectedValue.Unit, toValue.Unit, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= unitSystem.Name #>]");
+    }
+
+<#+ } #>
+<#+ } #>
+<#+ foreach (ScaledUnit unit in quantity.Units.OfType<ScaledUnit>()) { 
+		var expectedValue = FromValue * unit.Factor + unit.Offset;
+		var exp = (int)Math.Round(Math.Log10(Math.Abs(expectedValue))) - 8;
+#>
+    [TestMethod()]
+    //[DeploymentItem("PhysicalQuantities.dll")]
+    public void ConvertFrom<#= unit.Name #>To<#= unit.RelativeUnit.Name #>()
+    {
+      double delta = 1E<#= exp #>;
+      var fromUnit = PhysicalQuantities.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Quantity.Name #>.<#= unit.Name #>;
+      var fromValue = fromUnit.Times(<#= FromValue #>);
+      var toUnit = PhysicalQuantities.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Quantity.Name #>.<#= unit.RelativeUnit.Name #>;
+      var toValue = fromValue.To(toUnit);
+      var expectedValue = toUnit.Times(<#= expectedValue #>);
+      //Assert.AreEqual(expectedValue, toValue, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= unit.RelativeUnit.Name #> [<#= unitSystem.Name #>]");
+      Assert.AreEqual(expectedValue.Value, toValue.Value, delta, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= unit.RelativeUnit.Name #> [<#= unitSystem.Name #>]");
+      Assert.AreEqual(expectedValue.Unit, toValue.Unit, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= unit.RelativeUnit.Name #> [<#= unitSystem.Name #>]");
+    }
+
+<#+ } #>
+<#+ foreach (UnitConversion conv in root.UnitConversions.Where(c => c.Quantity == quantity.Quantity && (c.SourceUnitSystem == unitSystem/* || c.TargetUnitSystem == unitSystem*/))) { 
+		var expectedValue = (FromValue - conv.Offset) / conv.Factor;
+		var exp = (int)Math.Round(Math.Log10(Math.Abs(expectedValue))) - 8;
+		UnitBase unit = conv.SourceUnit; 
+		UnitBase toUnit = conv.TargetUnit; 
+#>
+    [TestMethod()]
+    //[DeploymentItem("PhysicalQuantities.dll")]
+    public void ConvertFrom<#= unit.Name #>To<#= toUnit.Name #>On<#= toUnit.Parent.Parent.Name #>()
+    {
+      double delta = 1E<#= exp #>;
+      var fromUnit = PhysicalQuantities.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Quantity.Name #>.<#= unit.Name #>;
+      var fromValue = fromUnit.Times(<#= FromValue #>);
+      var toUnit = PhysicalQuantities.UnitSystems.<#= toUnit.Parent.Parent.Name #>.<#= quantity.Quantity.Name #>.<#= toUnit.Name #>;
+      var toValue = fromValue.To(toUnit);
+      var expectedValue = toUnit.Times(<#= expectedValue #>);
+      //Assert.AreEqual(expectedValue, toValue, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= toUnit.Parent.Parent.Name #>]");
+      Assert.AreEqual(expectedValue.Value, toValue.Value, delta, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= toUnit.Parent.Parent.Name #>]");
+      Assert.AreEqual(expectedValue.Unit, toValue.Unit, "Error converting from <#= unit.Name #> [<#= unitSystem.Name #>] to <#= toUnit.Name #> [<#= toUnit.Parent.Parent.Name #>]");
+    }
+
+<#+ } #>
+  }
+}
+<#+
+	return this.GenerationEnvironment.ToString();
+	}
+}
+#>

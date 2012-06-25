@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PhysicalQuantities
 {
-  public class QuantityValue
+  public class QuantityValue //: IEquatable<QuantityValue>, IComparable<QuantityValue>
   {
     public QuantityValue(double value, Unit unit)
     {
