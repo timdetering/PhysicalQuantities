@@ -5,3 +5,4 @@ TestResults/
 *.pdb
 *.sln
 *.suo
+*.vspscc
