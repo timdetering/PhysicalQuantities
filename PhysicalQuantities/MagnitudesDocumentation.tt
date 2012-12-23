@@ -1,0 +1,257 @@
+﻿<#@ template  debug="true" hostSpecific="true" #>
+<#@ output extension=".html" encoding="utf-8"#>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Xml" #>
+<#@ Assembly Name="System.Xml.Linq.dll" #>
+<#@ Assembly Name="NetFrameworkExtensions.dll" #>
+<#@ assembly name="T4Toolbox.10.0"#>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="NetFrameworkExtensions" #>
+<#@ include file="t4toolbox.tt" #>
+<#@ include file="Common.ttinclude" #>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="MagnitudesDocumentation.css" />
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+		<script>
+		$(function() {
+			var quantitiesState = 1;
+			$("#SHQuantities").click(function(){
+				if (quantitiesState == 1) { $(this).text("[+]"); $("#Quantities").hide(); }
+				else { $(this).text("[-]"); $("#Quantities").show(); }
+				quantitiesState = 1 - quantitiesState;
+				return false;
+			});
+			var prefixesState = 1;
+			$("#SHPrefixTables").click(function(){
+				if (prefixesState == 1) { $(this).text("[+]"); $("#PrefixTables").hide(); }
+				else { $(this).text("[-]"); $("#PrefixTables").show(); }
+				prefixesState = 1 - prefixesState;
+				return false;
+			});
+			var usState = 1;
+			$("#SHUnitSystems").click(function(){
+				if (usState == 1) { $(this).text("[+]"); $("#UnitSystems").hide(); }
+				else { $(this).text("[-]"); $("#UnitSystems").show(); }
+				usState = 1 - usState;
+				return false;
+			});
+		});
+		</script>
+	</head>
+	<body>
+<#
+var templateFolder = Path.GetDirectoryName(Host.TemplateFile);
+var inputFilePath = Path.Combine(templateFolder, "Magnitudes.xml");
+var data = new PhysicalQuantities(inputFilePath);
+if (data.Context.Errors.Count > 0)
+{
+#>
+<h1>Data contains errors:</h1>
+<ul>
+<# foreach (var error in data.Context.Errors)
+{
+#>
+	<li><#= error #></li>
+<#	 
+} #>
+</ul>
+<# } else { 
+	new CssTemplate(data).RenderToFile("MagnitudesDocumentation.css");
+#>
+<# } #>
+		<h1>Table of Contents</h1>
+		<ul>
+			<li><a href="#Quantities">Quantities</a></li>
+			<li>
+				<a href="#UnitSystems">Unit Systems</a>
+				<ul>
+		<#	foreach (var unitSystem in data.UnitSystems)
+			{ #>
+				<li><a href="#SI_<#= unitSystem.Name #>"><#= unitSystem.Name #></a></li>
+		<#	} #>
+				</ul>
+			</li>
+			<li><a href="#UnitConversions">Unit Conversions</a></li>
+		</ul>
+		
+		<a name="Quantities">
+		<h2>Quantities <a id="SHQuantities" href="#">[-]</a></h2>
+		</a>
+		<table id="Quantities">
+			<thead>
+				<tr>
+					<th>Identifier</th>
+				</tr>
+			</thead>
+			<tbody>
+<#	foreach (var quantity in data.Quantities)
+	{ #>
+				<tr>
+					<td>
+						<# if (quantity.Reference != null) {#><a href="<#= quantity.Reference #>" target="_reference"><#} else {#><span><#} #>
+						<#= quantity.Name #><# if (!string.IsNullOrEmpty(quantity.Caption)) { #> (<#= quantity.Caption #>)<# } #>
+						<# if (quantity.Reference != null) {#></a><#} else {#></span><#} #>
+					</td>
+				</tr>
+<#	} #>
+			</tbody>
+		</table>
+
+		<a name="UnitSystems">
+		<h2>Unit Systems <a id="SHUnitSystems" href="#">[-]</a></h2>
+		<div id="UnitSystems">
+	<#	foreach (var unitSystem in data.UnitSystems)
+		{ #>
+			<a name="SI_<#= unitSystem.Name #>">
+			<h3>Unit System 
+			<# if (unitSystem.Reference != null) {#><a href="<#= unitSystem.Reference #>" target="_reference"><#} else {#><span><#} #>
+			<#= unitSystem.Name #><# if (!string.IsNullOrEmpty(unitSystem.Caption)) { #> (<#= unitSystem.Caption #>)<# } #>
+			<# if (unitSystem.Reference != null) {#></a><#} else {#></span><#} #>
+			</h3>
+			</a>
+		<#	foreach (var quantity in unitSystem.Quantities)
+			{ #>
+				<h4><#= quantity.Quantity.Name #></h4>
+				<table>
+					<tr>
+						<th>Unit</th>
+						<th>Caption</th>
+						<th>Symbol</th>
+						<th>Type</th>
+						<th>Conversion</th>
+					</tr>
+			<#	foreach (var unit in quantity.Units.OfType<Unit>())
+				{ #>
+					<tr>
+						<td>
+						<# if (unit.Reference != null) {#><a href="<#= unit.Reference #>" target="_reference"><#} else {#><span><#} #>
+						<#= unit.Name #>
+						<# if (unit.Reference != null) {#></a><#} else {#></span><#} #>
+						</td>
+						<td><#= "" + unit.Singular #></td>
+						<td><#= "" + unit.Symbol #></td>
+						<td>base unit</td>
+						<td>&nbsp;</td>
+					</tr>
+				<#	foreach (var prefix in unit.PrefixedUnits.SelectMany(pfu => pfu.Table.Prefixes))
+					{ #>
+					<tr>
+						<td>
+						<# if (prefix.Parent.Reference != null) {#><a href="<#= prefix.Parent.Reference #>" target="_reference"><#} else {#><span><#} #>
+						<#= prefix.Name #><#= unit.Name #>
+						<# if (prefix.Parent.Reference != null) {#></a><#} else {#></span><#} #>
+						</td>
+						<td><#= "" + prefix.Caption + unit.Singular #></td>
+						<td>
+							<# if (unit.Symbol != null) {#><#= prefix.Symbol + unit.Symbol #><#} else {#>&nbsp;<#} #>
+						</td>
+						<td>prefixed unit</td>
+						<td>1 <#= prefix.Name #><#= unit.Name #> = <#= prefix.Factor #> <#= unit.Name #></td>
+					</tr>
+				<#	} #>
+			<#	} #>
+			<#	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
+				{ #>
+					<tr>
+						<td>
+						<# if (unit.Reference != null) {#><a href="<#= unit.Reference #>" target="_reference"><#} else {#><span><#} #>
+						<#= unit.Name #>
+						<# if (unit.Reference != null) {#></a><#} else {#></span><#} #>
+						</td>
+						<td><#= "" + unit.Singular #></td>
+						<td><#= "" + unit.Symbol #></td>
+						<td>scaled unit</td>
+						<td>1 <#= unit.Name #> = <#= unit.Factor #> <#= unit.RelativeUnit.Name #><# if(unit.Offset != 0.0) {#> + <#= unit.Offset #><#} #></td>
+					</tr>
+			<#	} #>
+				</table>
+		<#	} #>
+	<#	} #>
+		</div>
+		</a>
+
+		<a name="UnitConversions">
+		<h2>Unit Conversions <a id="SHUnitConversions" href="#">[-]</a></h2>
+		</a>
+		<table id="UnitConversions">
+			<thead>
+				<tr>
+					<th>Conversion</th>
+				</tr>
+			</thead>
+			<tbody>
+<#	foreach (var conv in data.UnitConversions)
+	{ #>
+				<tr>
+					<td>1 <#= conv.TargetUnit.Name #> (on <#= conv.TargetUnitSystem.Name #>) = <#= conv.Factor #> <#= conv.SourceUnit.Name #> (on <#= conv.SourceUnitSystem.Name #>)<# if(conv.Offset != 0.0) {#> + <#= conv.Offset #><#} #></td>
+				</tr>
+<#	} #>
+			</tbody>
+		</table>
+	</body>
+</html>
+<#+ 
+
+public class CssTemplate : T4Toolbox.Template
+{
+	PhysicalQuantities data;
+	public CssTemplate(PhysicalQuantities data) { this.data = data; }
+	
+    public override string TransformText()
+    {		
+#>
+body
+{
+	font-family: Tahoma, Arial, Sans-Serif;
+	font-size: 1em;
+	margin: 1em;
+	background-color: #F0F8FF;
+	color: #004060;
+}
+h1 { font-size: 1.8em; }
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1em; }
+table
+{
+	border-collapse:collapse;
+	font-size: 1em;
+}
+table, tr, th, td
+{
+	border: 1px solid #004060;
+}
+th
+{
+	background-color: #004060;
+	color: #F0F8FF;
+}
+th, td
+{
+	padding: 2px 12px;
+}
+a[href], a:visited[href], a:link[href]
+{
+	color: blue;
+	text-decoration: none;
+}
+a:hover[href]
+{
+	text-decoration: underline;
+}
+<#+
+	return this.GenerationEnvironment.ToString();
+	}
+}
+#>

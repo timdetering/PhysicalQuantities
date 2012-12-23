@@ -1,0 +1,11 @@
+syntax: glob
+bin/
+obj/
+TestResults/
+*.pdb
+*.sln
+*.suo
+*.7z
+*.zip
+*.rar
+*.gpState
