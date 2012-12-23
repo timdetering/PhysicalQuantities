@@ -14,5 +14,10 @@ namespace PhysicalQuantities
     public Quantity Quantity { get; internal set; }
 
     public IEnumerable<Unit> Units { get { return _Units; } }
+
+    public override string ToString()
+    {
+      return String.Format("{0} on {1}", Quantity, UnitSystem);
+    }
   }
 }

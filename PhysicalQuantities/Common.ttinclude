@@ -93,8 +93,8 @@ public class PhysicalQuantities
 			if (ctx.HasErrors) return;
 		}
 		ctx.RunActions(this);
-	}
-}
+	} // void Load(XElement element, LoadContext ctx)
+} // public class PhysicalQuantities
 
 public abstract class QuantityBase
 {
@@ -106,6 +106,7 @@ public abstract class QuantityBase
 		if (ctx.HasErrors) return;
 		
 		Name = (string)element.Attribute("Name");
+		Caption = (string)element.Attribute("SpanishName") ?? (string)element.Attribute("EnglishName");
 		Reference = (string)element.Attribute("Reference");
 		if (element.Attribute("Symbol") != null)
 			Symbol = (string)element.Attribute("Symbol");
@@ -115,6 +116,7 @@ public abstract class QuantityBase
 	public PhysicalQuantities Parent { get;set; }
 	public string Reference { get; set; }
 	public string Name { get; set; }
+	public string Caption { get; set; }
 	public string Symbol { get; set; }
 	
 	public static QuantityBase Load(PhysicalQuantities parent, XElement element, LoadContext ctx)
@@ -126,14 +128,16 @@ public abstract class QuantityBase
 		ctx.NotifyError("Unknown quantity type", element);
 		return null;
 	}
-}
+} // public abstract class QuantityBase
+
 public class BaseQuantity : QuantityBase
 {
 	public BaseQuantity(PhysicalQuantities parent, XElement element, LoadContext ctx)
 		: base(parent, element, ctx)
 	{
 	}
-}
+} // public class BaseQuantity
+
 public class DerivedQuantity : QuantityBase
 {
 	public DerivedQuantity(PhysicalQuantities parent, XElement element, LoadContext ctx)
@@ -150,7 +154,8 @@ public class DerivedQuantity : QuantityBase
 	}
 	
 	public List<QuantityExp> BaseQuantities { get; set; }
-}
+} // public class DerivedQuantity
+
 public class QuantityExp
 {
 	public QuantityExp(DerivedQuantity parent, XElement element, LoadContext ctx)
@@ -165,7 +170,12 @@ public class QuantityExp
 		QuantityName = (string)element.Attribute("Name");
 		Exponent = (int)element.Attribute("Exponent");
 		
-		ctx.AddAction(r => this.Quantity = r.Quantities.Single(q => q.Name == this.QuantityName));
+		ctx.AddAction(r => Update(r));
+	}
+
+	internal void Update(PhysicalQuantities r)
+	{
+    	this.Quantity = r.Quantities.Single(q => q.Name == this.QuantityName);
 	}
 	
 	public DerivedQuantity Parent { get; set; }
@@ -173,7 +183,8 @@ public class QuantityExp
 	public QuantityBase Quantity { get; set; }
 	
 	public int Exponent { get; set; }
-}
+} // public class QuantityExp
+    
 public class PrefixTable
 {
 	public PrefixTable(PhysicalQuantities parent, XElement element, LoadContext ctx)
@@ -184,6 +195,7 @@ public class PrefixTable
 		if (ctx.HasErrors) return;
 		
 		Name = (string)element.Attribute("Name");
+		Caption = (string)element.Attribute("SpanishName") ?? (string)element.Attribute("EnglishName");
 		Reference = (string)element.Attribute("Reference");
 		
 		Prefixes = new List<Prefix>();
@@ -197,8 +209,10 @@ public class PrefixTable
 	public PhysicalQuantities Parent { get; set; }
 	public string Reference { get; set; }
 	public string Name { get; set; }
+	public string Caption { get; set; }
 	public List<Prefix> Prefixes { get; set; }
-}
+} // public class PrefixTable
+
 public class Prefix
 {
 	public Prefix(PrefixTable parent, XElement element, LoadContext ctx)
@@ -211,15 +225,18 @@ public class Prefix
 		if (ctx.HasErrors) return;
 		
 		Name = (string)element.Attribute("Name");
+		Caption = (string)element.Attribute("SpanishName") ?? (string)element.Attribute("EnglishName");
 		Symbol = (string)element.Attribute("Symbol");
 		Factor = (double)element.Attribute("Factor");
 	}
 	
 	public PrefixTable Parent { get; set; }
 	public string Name { get; set; }
+	public string Caption { get; set; }
 	public string Symbol { get; set; }
 	public double Factor { get; set; }
-}
+} // public class Prefix
+
 public class UnitSystem
 {
 	public UnitSystem(PhysicalQuantities parent, XElement element, LoadContext ctx)
@@ -230,6 +247,7 @@ public class UnitSystem
 		if (ctx.HasErrors) return;
 		
 		Name = (string)element.Attribute("Name");
+		Caption = (string)element.Attribute("SpanishName") ?? (string)element.Attribute("EnglishName");
 		Reference = (string)element.Attribute("Reference");
 		
 		Quantities = new List<UnitSystemQuantity>();
@@ -242,9 +260,10 @@ public class UnitSystem
 	
 	public PhysicalQuantities Parent { get; set; }
 	public string Reference { get; set; }
+	public string Caption { get; set; }
 	public string Name { get; set; }
 	public List<UnitSystemQuantity> Quantities { get; set; }
-}
+} // public class UnitSystem
 
 public class UnitSystemQuantity
 {
@@ -264,14 +283,20 @@ public class UnitSystemQuantity
 			if (ctx.HasErrors) return;
 		}
 
-		ctx.AddAction(r => this.Quantity = r.Quantities.Single(t => t.Name == this.Name), element);
+		ctx.AddAction(r => Update(r), element);
+	}
+
+	internal void Update(PhysicalQuantities r)
+	{
+		this.Quantity = r.Quantities.Single(t => t.Name == this.Name);
 	}
 	
 	public UnitSystem Parent { get; set; }
 	public string Name { get; set; }
 	public QuantityBase Quantity { get; set; }
 	public List<UnitBase> Units { get; set; }
-}
+} // public class UnitSystemQuantity
+
 public abstract class UnitBase
 {
 	public UnitBase(UnitSystemQuantity parent, XElement element, LoadContext ctx)
@@ -282,14 +307,28 @@ public abstract class UnitBase
 		if (ctx.HasErrors) return;
 		
 		Name = (string)element.Attribute("Name");
+		Singular = (string)element.Attribute("SpanishSingular") ?? (string)element.Attribute("EnglishSingular");
+		Plural = (string)element.Attribute("SpanishPlural") ?? (string)element.Attribute("EnglishPlural");
 		Symbol = (string)element.Attribute("Symbol");
 		Reference = (string)element.Attribute("Reference");
 	}
-	
+	internal UnitBase(UnitSystemQuantity parent, string name, string symbol, string reference)
+	{
+		Parent = parent;
+		Name = name;
+		Symbol = symbol;
+		Reference = reference;
+	}
 	public string Reference { get; set; }
+	public string Singular { get; set; }
+	public string Plural { get; set; }
 	public string Name { get; set; }
 	public string Symbol { get; set; }
 	public UnitSystemQuantity Parent { get; set; }
+  public virtual IEnumerable<UnitBase> GetAllUnits()
+	{
+		yield return this;
+	}
 	
 	public static UnitBase Load(UnitSystemQuantity parent, XElement element, LoadContext ctx)
 	{
@@ -300,7 +339,8 @@ public abstract class UnitBase
 		ctx.NotifyError("Unknown unit type", element);
 		return null;
 	}
-}
+} // public abstract class UnitBase
+
 public class Unit : UnitBase
 {
 	public Unit(UnitSystemQuantity parent, XElement element, LoadContext ctx)
@@ -314,10 +354,30 @@ public class Unit : UnitBase
 			PrefixedUnits.Add(new PrefixedUnit(this, xElem, ctx));
 			if (ctx.HasErrors) return;
 		}
+		ctx.AddAction(r => Update(r), element);
+	}
+
+	internal void Update(PhysicalQuantities r)
+	{
+		var list = new List<UnitBase>();
+		list.Add(this);
+		foreach (Prefix prefix in PrefixedUnits.Select(pu => pu.Table).SelectMany(pt => pt.Prefixes))
+		{
+			var scaledUnit = new ScaledUnit(Parent, prefix.Name + this.Name, this.Symbol == null ? null : prefix.Symbol + this.Symbol, this.Reference, prefix.Factor, 0.0, this);
+			list.Add(scaledUnit);
+		}
+		AllUnits = list;
 	}
 	
 	public List<PrefixedUnit> PrefixedUnits { get; set; }
-}
+	public IEnumerable<UnitBase> AllUnits { get; set; }
+	
+	public override IEnumerable<UnitBase> GetAllUnits()
+	{
+		return AllUnits;
+	}
+} // public class Unit
+
 public class PrefixedUnit
 {
 	public PrefixedUnit(Unit parent, XElement element, LoadContext ctx)
@@ -329,13 +389,19 @@ public class PrefixedUnit
 		
 		TableName = (string)element.Attribute("TableName");
 		
-		ctx.AddAction(r => this.Table = r.PrefixTables.Single(t => t.Name == TableName), element);
+		ctx.AddAction(r => Update(r), element);
+	}
+
+	internal void Update(PhysicalQuantities r)
+	{
+		this.Table = r.PrefixTables.Single(t => t.Name == TableName);
 	}
 	
 	public string TableName { get; set; }
 	public PrefixTable Table { get; set; }
 	public Unit Parent { get; set; }
-}
+} // public class PrefixedUnit
+
 public class ScaledUnit : UnitBase
 {
 	public ScaledUnit(UnitSystemQuantity parent, XElement element, LoadContext ctx)
@@ -355,14 +421,29 @@ public class ScaledUnit : UnitBase
 			Offset = (double)element.Attribute("Offset");
 		RelativeUnitName = (string)element.Attribute("FactorRelativeTo");
 
-		ctx.AddAction(r => this.RelativeUnit = Parent.Units.Single(t => t.Name == RelativeUnitName), element);
+		ctx.AddAction(r => Update(r), element);
+	}
+
+	internal ScaledUnit(UnitSystemQuantity parent, string name, string symbol, string reference, double factor, double offset, UnitBase relativeUnit)
+		: base(parent, name, symbol, reference)
+	{
+		Factor = factor;
+		Offset = offset;
+		RelativeUnit = relativeUnit;
+		RelativeUnitName = relativeUnit.Name;
+	}
+	
+	internal void Update(PhysicalQuantities r)
+	{
+		this.RelativeUnit = Parent.Units.Single(t => t.Name == RelativeUnitName);
 	}
 	
 	public double Factor { get; set; }
 	public double Offset { get; set; }
 	public string RelativeUnitName { get; set; }
 	public UnitBase RelativeUnit { get; set; }
-}
+} // public class ScaledUnit
+
 public class UnitConversion
 {
 	public UnitConversion(PhysicalQuantities parent, XElement element, LoadContext ctx)
@@ -392,20 +473,22 @@ public class UnitConversion
 		SourceUnitName = (string)element.Attribute("SourceUnit");
 		TargetUnitName = (string)element.Attribute("TargetUnit");
 		
-		ctx.AddAction(r => 
-		{
-			this.Quantity = r.Quantities.Single(t => t.Name == this.QuantityName);
-			this.SourceUnitSystem = r.UnitSystems.Single(t => t.Name == this.SourceUnitSystemName);
-			this.TargetUnitSystem = r.UnitSystems.Single(t => t.Name == this.TargetUnitSystemName);
-			this.SourceUnit = this.SourceUnitSystem.Quantities
-				.Single(t => t.Name == this.QuantityName)
-				.Units
-				.Single(u => u.Name == this.SourceUnitName);
-			this.TargetUnit = this.TargetUnitSystem.Quantities
-				.Single(t => t.Name == this.QuantityName)
-				.Units
-				.Single(u => u.Name == this.TargetUnitName);
-		}, element);
+		ctx.AddAction(r => Update(r), element);
+	}
+
+	internal void Update(PhysicalQuantities r)
+	{
+		this.Quantity = r.Quantities.Single(t => t.Name == this.QuantityName);
+		this.SourceUnitSystem = r.UnitSystems.Single(t => t.Name == this.SourceUnitSystemName);
+		this.TargetUnitSystem = r.UnitSystems.Single(t => t.Name == this.TargetUnitSystemName);
+		this.SourceUnit = this.SourceUnitSystem.Quantities
+			.Single(t => t.Name == this.QuantityName)
+			.Units
+			.Single(u => u.Name == this.SourceUnitName);
+		this.TargetUnit = this.TargetUnitSystem.Quantities
+			.Single(t => t.Name == this.QuantityName)
+			.Units
+			.Single(u => u.Name == this.TargetUnitName);
 	}
 	
 	public PhysicalQuantities Parent { get;set; }
@@ -422,6 +505,6 @@ public class UnitConversion
 	public UnitSystem TargetUnitSystem { get; set; }
 	public UnitBase SourceUnit { get; set; }
 	public UnitBase TargetUnit { get; set; }
-}
+} // public class UnitConversion
 #endregion
 #>

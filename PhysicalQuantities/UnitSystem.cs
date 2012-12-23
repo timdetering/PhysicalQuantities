@@ -47,6 +47,8 @@ namespace PhysicalQuantities
 
     public string Name { get; private set; }
 
+    public string Caption { get; set; }
+
     public UnitConversionTable ConversionTable { get; private set; }
 
     public IEnumerable<UnitGroup> UnitSystemQuantities
@@ -87,6 +89,11 @@ namespace PhysicalQuantities
     public Func<double, double> GetConversion(Unit fromUnit, Unit toUnit)
     {
       return ConversionTable.GetConversion(fromUnit, toUnit);
+    }
+
+    public override string ToString()
+    {
+      return Caption ?? Name;
     }
   }
 }

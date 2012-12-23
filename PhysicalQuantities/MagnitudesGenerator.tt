@@ -113,7 +113,7 @@ public static string ns = "PhysicalQuantities";
 public class QuantitiesTemplate : T4Toolbox.Template
 {
 	PhysicalQuantities data;
-	public QuantitiesTemplate(PhysicalQuantities data) { this.data = data; }
+	public QuantitiesTemplate(PhysicalQuantities data) { this.data = data; Output.Encoding = System.Text.Encoding.Unicode; }
 	
     public override string TransformText()
     {		
@@ -180,14 +180,14 @@ namespace <#= ns #>
       #region [ Base Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
 	{ #>
-      <#= quantity.Name #> = new BaseQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>);
+      <#= quantity.Name #> = new BaseQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>) { Caption = @"<#= quantity.Caption #>" };
 <#+	} #>
       #endregion [ Base Quantities ]
 
       #region [ Derived Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
 	{ #>
-      <#= quantity.Name #> = new DerivedQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= quantity.BaseQuantities.ToStringList(", ", q => string.Format("new QuantityExp(Quantities.{0}, {1})", q.Quantity.Name, q.Exponent)) #>);
+      <#= quantity.Name #> = new DerivedQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= quantity.BaseQuantities.ToStringList(", ", q => string.Format("new QuantityExp(Quantities.{0}, {1})", q.Quantity.Name, q.Exponent)) #>) { Caption = @"<#= quantity.Caption #>" };
 <#+	} #>
       #endregion [ Derived Quantities ]
 
@@ -215,7 +215,7 @@ namespace <#= ns #>
 public class QuantityTemplate : T4Toolbox.Template
 {
 	UnitSystemQuantity quantity;
-	public QuantityTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; }
+	public QuantityTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; Output.Encoding = System.Text.Encoding.Unicode; }
 	
     public override string TransformText()
     {
@@ -284,18 +284,18 @@ namespace <#= ns #>
         {
 <#+	foreach (var unit in quantity.Units.OfType<Unit>())
 	{ #>
-          <#= unit.Name #> = new BaseUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= ns #>.Quantities.<#= quantity.Name #>, unitSystem);
+          <#= unit.Name #> = new BaseUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= ns #>.Quantities.<#= quantity.Name #>, unitSystem) { Caption = @"<#= unit.Singular.AsVerbatim() #>" };
 <#+	foreach (var prefixTable in unit.PrefixedUnits)
 	{ #>
 <#+	foreach (var prefix in prefixTable.Table.Prefixes)
 	{ #>
-          <#= prefix.Name #><#= unit.Name #> = new ScaledUnit(@"<#= prefix.Name.AsVerbatim() #><#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= prefix.Symbol.AsVerbatim() #><#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.Name #>, <#= prefix.Factor #>, 0.0);
+          <#= prefix.Name #><#= unit.Name #> = new ScaledUnit(@"<#= prefix.Name.AsVerbatim() #><#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= prefix.Symbol.AsVerbatim() #><#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.Name #>, <#= prefix.Factor #>, 0.0) { Caption = @"<#= prefix.Caption.AsVerbatim() #><#= unit.Singular.AsVerbatim() #>" };
 <#+	} #>
 <#+	} #>
 <#+	} #>
 <#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
 	{ #>
-          <#= unit.Name #> = new ScaledUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.RelativeUnit.Name #>, <#= unit.Factor #>, <#= unit.Offset #>);
+          <#= unit.Name #> = new ScaledUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.RelativeUnit.Name #>, <#= unit.Factor #>, <#= unit.Offset #>) { Caption = @"<#= unit.Singular.AsVerbatim() #>" };
 <#+ } #>
 
           allUnits = new Dictionary<string, Unit>
@@ -334,7 +334,7 @@ namespace <#= ns #>
 public class UnitSystemTemplate : T4Toolbox.Template
 {
 	UnitSystem unitSystem;
-	public UnitSystemTemplate(UnitSystem unitSystem) { this.unitSystem = unitSystem; }
+	public UnitSystemTemplate(UnitSystem unitSystem) { this.unitSystem = unitSystem; Output.Encoding = System.Text.Encoding.Unicode; }
 	
     public override string TransformText()
     {
@@ -400,7 +400,7 @@ namespace <#= ns #>
 	  
       internal static UnitSystem Create(UnitConversionTable ConversionTable)
       {
-        var unitSystem = new UnitSystem(@"<#= unitSystem.Name #>", ConversionTable);
+        var unitSystem = new UnitSystem(@"<#= unitSystem.Name #>", ConversionTable) { Caption = @"<#= unitSystem.Caption #>" };
 
 <#+	foreach (var quantity in unitSystem.Quantities)
 	{ #>

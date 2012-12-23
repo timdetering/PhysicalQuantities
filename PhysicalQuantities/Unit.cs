@@ -17,6 +17,8 @@ namespace PhysicalQuantities
 
     public string Name { get; private set; }
 
+    public string Caption { get; set; }
+
     public string Symbol { get; private set; }
 
     public abstract Quantity Quantity { get; }
@@ -36,6 +38,13 @@ namespace PhysicalQuantities
     public Func<double, double> GetConversionTo(Unit otherUnit)
     {
       return UnitSystem.GetConversion(this, otherUnit);
+    }
+
+    public override string ToString()
+    {
+      if (string.IsNullOrEmpty(Symbol))
+        return Name;
+      return String.Format("{0} ({1})", Caption ?? Name, Symbol);
     }
   }
 }

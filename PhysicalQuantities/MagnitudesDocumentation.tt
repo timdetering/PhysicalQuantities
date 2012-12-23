@@ -98,7 +98,7 @@ if (data.Context.Errors.Count > 0)
 				<tr>
 					<td>
 						<# if (quantity.Reference != null) {#><a href="<#= quantity.Reference #>" target="_reference"><#} else {#><span><#} #>
-						<#= quantity.Name #>
+						<#= quantity.Name #><# if (!string.IsNullOrEmpty(quantity.Caption)) { #> (<#= quantity.Caption #>)<# } #>
 						<# if (quantity.Reference != null) {#></a><#} else {#></span><#} #>
 					</td>
 				</tr>
@@ -114,7 +114,7 @@ if (data.Context.Errors.Count > 0)
 			<a name="SI_<#= unitSystem.Name #>">
 			<h3>Unit System 
 			<# if (unitSystem.Reference != null) {#><a href="<#= unitSystem.Reference #>" target="_reference"><#} else {#><span><#} #>
-			<#= unitSystem.Name #>
+			<#= unitSystem.Name #><# if (!string.IsNullOrEmpty(unitSystem.Caption)) { #> (<#= unitSystem.Caption #>)<# } #>
 			<# if (unitSystem.Reference != null) {#></a><#} else {#></span><#} #>
 			</h3>
 			</a>
@@ -124,6 +124,7 @@ if (data.Context.Errors.Count > 0)
 				<table>
 					<tr>
 						<th>Unit</th>
+						<th>Caption</th>
 						<th>Symbol</th>
 						<th>Type</th>
 						<th>Conversion</th>
@@ -136,6 +137,7 @@ if (data.Context.Errors.Count > 0)
 						<#= unit.Name #>
 						<# if (unit.Reference != null) {#></a><#} else {#></span><#} #>
 						</td>
+						<td><#= "" + unit.Singular #></td>
 						<td><#= "" + unit.Symbol #></td>
 						<td>base unit</td>
 						<td>&nbsp;</td>
@@ -148,6 +150,7 @@ if (data.Context.Errors.Count > 0)
 						<#= prefix.Name #><#= unit.Name #>
 						<# if (prefix.Parent.Reference != null) {#></a><#} else {#></span><#} #>
 						</td>
+						<td><#= "" + prefix.Caption + unit.Singular #></td>
 						<td>
 							<# if (unit.Symbol != null) {#><#= prefix.Symbol + unit.Symbol #><#} else {#>&nbsp;<#} #>
 						</td>
@@ -164,6 +167,7 @@ if (data.Context.Errors.Count > 0)
 						<#= unit.Name #>
 						<# if (unit.Reference != null) {#></a><#} else {#></span><#} #>
 						</td>
+						<td><#= "" + unit.Singular #></td>
 						<td><#= "" + unit.Symbol #></td>
 						<td>scaled unit</td>
 						<td>1 <#= unit.Name #> = <#= unit.Factor #> <#= unit.RelativeUnit.Name #><# if(unit.Offset != 0.0) {#> + <#= unit.Offset #><#} #></td>

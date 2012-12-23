@@ -18,6 +18,8 @@ namespace PhysicalQuantities
 
     public string Name { get; private set; }
 
+    public string Caption { get; set; }
+
     public string Symbol { get; private set; }
 
     public abstract NormalizedQuantity NormalizedQuantity { get; }
@@ -25,9 +27,9 @@ namespace PhysicalQuantities
     public override string ToString()
     {
       if (Symbol != null)
-        return string.Format("Q: {0} ({1}) -> {2}", Name, Symbol, NormalizedQuantity);
+        return string.Format("Q: {0} ({1}) -> {2}", Caption ?? Name, Symbol, NormalizedQuantity);
       else
-        return string.Format("Q: {0} -> {1}", Name, NormalizedQuantity);
+        return string.Format("Q: {0} -> {1}", Caption ?? Name, NormalizedQuantity);
     }
 
     public virtual bool Equals(Quantity other)
