@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -70,8 +71,334 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Imperial_Angle_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_AngularVelocity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Area_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Density_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Dimensionless_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Energy_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Force_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Length_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Mass_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Power_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Pressure_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Speed_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Temperature_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Time_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_VolumetricFlow_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Imperial_Volume_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RSI_Acceleration_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Angle_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Area_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Dimensionless_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_ElectricCapacitance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_ElectricConductance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_ElectricCurrent_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_ElectricResistance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Energy_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Force_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Frequency_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Illuminance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Length_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_LuminousFlux_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_LuminousIntensity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_MagneticField_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_MagneticFlux_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Mass_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Momentum_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Power_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Pressure_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Speed_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Temperature_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Time_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Voltage_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_VolumetricFlow_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RSI_Volume_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_AbsorbedDose_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Acceleration_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Action_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Angle_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_AngularMomentum_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_AngularVelocity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_AreaDensity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Area_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_CatalyticActivity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Density_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Dimensionless_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_ElectricCapacitance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_ElectricCharge_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_ElectricConductance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_ElectricCurrent_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_ElectricResistance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Energy_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_EquivalentDose_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Force_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Frequency_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_HeatCapacity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Illuminance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Inductance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Jerk_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Jounce_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Length_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_LuminousFlux_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_LuminousIntensity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_MagneticField_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_MagneticFlux_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Mass_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Momentum_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_NewtonianConstantOfGravitationQuantity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Power_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Pressure_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_RadioactiveDecay_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_SolidAngle_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_SpecificVolume_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Speed_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Substance_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Temperature_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Time_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Torque_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Voltage_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_VolumetricFlow_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Volume_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Wavenumber_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SI_Yank_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TestGenerator.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
     <Compile Include="TestLength.cs" />
+    <Compile Include="US_Angle_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_AngularVelocity_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Area_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Density_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Dimensionless_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Energy_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Force_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Length_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Mass_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Power_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Pressure_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Speed_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Temperature_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Time_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_VolumetricFlow_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="US_Volume_Tests.cs">
+      <DependentUpon>TestGenerator.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PhysicalQuantities\PhysicalQuantities.csproj">
@@ -81,6 +408,15 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Referencias de prueba\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestGenerator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TestGenerator.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

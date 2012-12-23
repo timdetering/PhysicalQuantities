@@ -1,7 +1,0 @@
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\obj\Debug\ResolveAssemblyReference.cache
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\bin\Debug\PhysicalQuantities.dll
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\bin\Debug\PhysicalQuantities.pdb
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\bin\Debug\NetFrameworkExtensions.dll
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\bin\Debug\NetFrameworkExtensions.pdb
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\obj\Debug\PhysicalQuantities.dll
-C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities\obj\Debug\PhysicalQuantities.pdb

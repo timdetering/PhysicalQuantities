@@ -5,7 +5,7 @@ TestResults/
 *.pdb
 *.sln
 *.suo
+*.vspscc
 *.7z
-*.zip
 *.rar
 *.gpState

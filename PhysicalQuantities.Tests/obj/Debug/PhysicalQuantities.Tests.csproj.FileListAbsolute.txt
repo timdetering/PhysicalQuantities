@@ -7,3 +7,12 @@ C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities.Tests\bin\Debug\PhysicalQ
 C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities.Tests\bin\Debug\NetFrameworkExtensions.pdb
 C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities.Tests\obj\Debug\PhysicalQuantities.Tests.dll
 C:\Iskander\Work\PhysicalQuantities\PhysicalQuantities.Tests\obj\Debug\PhysicalQuantities.Tests.pdb
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\PhysicalQuantities.Tests.dll
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\PhysicalQuantities.Tests.pdb
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\PhysicalQuantities.dll
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\NetFrameworkExtensions.dll
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\PhysicalQuantities.pdb
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\bin\Debug\NetFrameworkExtensions.pdb
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\obj\Debug\ResolveAssemblyReference.cache
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\obj\Debug\PhysicalQuantities.Tests.dll
+C:\GrupoJG2\MantTest.NET\PhysicalQuantities Solution\PhysicalQuantities.Tests\obj\Debug\PhysicalQuantities.Tests.pdb
