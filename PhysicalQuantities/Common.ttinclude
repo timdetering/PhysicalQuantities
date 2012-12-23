@@ -175,7 +175,7 @@ public class QuantityExp
 
 	internal void Update(PhysicalQuantities r)
 	{
-    	this.Quantity = r.Quantities.Single(q => q.Name == this.QuantityName);
+		this.Quantity = r.Quantities.Single(q => q.Name == this.QuantityName);
 	}
 	
 	public DerivedQuantity Parent { get; set; }
@@ -319,13 +319,20 @@ public abstract class UnitBase
 		Symbol = symbol;
 		Reference = reference;
 	}
+	{
+		Parent = parent;
+		Name = name;
+		Symbol = symbol;
+		Reference = reference;
+	}
 	public string Reference { get; set; }
 	public string Singular { get; set; }
 	public string Plural { get; set; }
 	public string Name { get; set; }
 	public string Symbol { get; set; }
 	public UnitSystemQuantity Parent { get; set; }
-  public virtual IEnumerable<UnitBase> GetAllUnits()
+	
+	public virtual IEnumerable<UnitBase> GetAllUnits()
 	{
 		yield return this;
 	}
@@ -375,6 +382,7 @@ public class Unit : UnitBase
 	public override IEnumerable<UnitBase> GetAllUnits()
 	{
 		return AllUnits;
+	}
 	}
 } // public class Unit
 
