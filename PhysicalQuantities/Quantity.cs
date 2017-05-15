@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.CompilerServices;
 
 namespace PhysicalQuantities
 {
-  public abstract class Quantity : INamedSymbol, IEquatable<Quantity>, IComparable<Quantity>
+    public abstract class Quantity : INamedSymbol, IEquatable<Quantity>, IComparable<Quantity>
   {
     protected Quantity(string name, string symbol)
     {

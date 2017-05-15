@@ -34,7 +34,7 @@ Data contains errors:
 } #>
 */
 <# } else { 
-	new QuantitiesTemplate(data).RenderToFile("Quantities.cs");	
+    new QuantitiesTemplate(data).RenderToFile("Quantities.cs");	
 #>
 using System;
 using System.Collections.Generic;
@@ -51,9 +51,9 @@ namespace <#= ns #>
     public static readonly UnitConversionTable ConversionTable;
 
 <#	foreach (var unitSystem in data.UnitSystems)
-	{ 
-		new UnitSystemTemplate(unitSystem).RenderToFile(unitSystem.Name + ".cs");
-	} #>
+    { 
+        new UnitSystemTemplate(unitSystem).RenderToFile(unitSystem.Name + ".cs");
+    } #>
     #region [ Lookup ]
     private static Dictionary<string, UnitSystem> allUnitSystems;
     public static UnitSystem GetUnitSystem(string unitSystemName)
@@ -84,19 +84,19 @@ namespace <#= ns #>
       ConversionTable = new UnitConversionTable();
 
 <#	foreach (var unitSystem in data.UnitSystems)
-	{ #>
+    { #>
       UnitSystems.<#= unitSystem.Name #>.UnitSystem = <#= unitSystem.Name #>.Create(ConversionTable);
 <#	} #>
 
 <#	foreach (var unitConversion in data.UnitConversions)
-	{ #>
+    { #>
       ConversionTable.AddConversion(new UnitConversion(<#= ns #>.UnitSystems.<#= unitConversion.TargetUnitSystem.Name #>.<#= unitConversion.TargetUnit.Parent.Quantity.Name #>.<#= unitConversion.TargetUnit.Name #>, <#= ns #>.UnitSystems.<#= unitConversion.SourceUnitSystem.Name #>.<#= unitConversion.SourceUnit.Parent.Quantity.Name #>.<#= unitConversion.SourceUnit.Name #>, <#= unitConversion.Factor #>, <#= unitConversion.Offset #>));
 <#	} #>
 
       allUnitSystems = new Dictionary<string, UnitSystem>
       {
 <#	foreach (var unitSystem in data.UnitSystems)
-	{ #>
+    { #>
         { <#= unitSystem.Name #>.UnitSystem.Name, <#= unitSystem.Name #>.UnitSystem },
 <#	} #>
       };
@@ -112,9 +112,9 @@ public static string ns = "PhysicalQuantities";
 
 public class QuantitiesTemplate : T4Toolbox.Template
 {
-	PhysicalQuantities data;
-	public QuantitiesTemplate(PhysicalQuantities data) { this.data = data; Output.Encoding = System.Text.Encoding.Unicode; }
-	
+    PhysicalQuantities data;
+    public QuantitiesTemplate(PhysicalQuantities data) { this.data = data; Output.Encoding = System.Text.Encoding.Unicode; }
+    
     public override string TransformText()
     {		
 #>
@@ -135,7 +135,7 @@ namespace <#= ns #>
   {
     #region [ Base Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
-	{ #>
+    { #>
 <#+ if (quantity.Reference != null) { #>
     /// <summary>
     /// Reference: <#= quantity.Reference #>
@@ -147,7 +147,7 @@ namespace <#= ns #>
 
     #region [ Derived Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
-	{ #>
+    { #>
 <#+ if (quantity.Reference != null) { #>
     /// <summary>
     /// Reference: <#= quantity.Reference #>
@@ -156,7 +156,7 @@ namespace <#= ns #>
     public static readonly DerivedQuantity <#= quantity.Name #>;
 <#+	} #>
     #endregion [ Derived Quantities ]
-	
+    
     #region [ Lookup ]
     private static Dictionary<string, Quantity> allQuantities;
     public static Quantity GetQuantity(string quantityName)
@@ -179,14 +179,14 @@ namespace <#= ns #>
     {
       #region [ Base Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
-	{ #>
+    { #>
       <#= quantity.Name #> = new BaseQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>) { Caption = @"<#= quantity.Caption #>" };
 <#+	} #>
       #endregion [ Base Quantities ]
 
       #region [ Derived Quantities ]
 <#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
-	{ #>
+    { #>
       <#= quantity.Name #> = new DerivedQuantity(@"<#= quantity.Name.AsVerbatim() #>", <#+ if (quantity.Symbol != null) {#>@"<#= quantity.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= quantity.BaseQuantities.ToStringList(", ", q => string.Format("new QuantityExp(Quantities.{0}, {1})", q.Quantity.Name, q.Exponent)) #>) { Caption = @"<#= quantity.Caption #>" };
 <#+	} #>
       #endregion [ Derived Quantities ]
@@ -195,11 +195,11 @@ namespace <#= ns #>
       allQuantities = new Dictionary<string, Quantity>
       {
 <#+	foreach (var quantity in data.Quantities.OfType<BaseQuantity>())
-	{ #>
+    { #>
         { Quantities.<#= quantity.Name #>.Name, Quantities.<#= quantity.Name #> },
 <#+	} #>
 <#+	foreach (var quantity in data.Quantities.OfType<DerivedQuantity>())
-	{ #>
+    { #>
         { Quantities.<#= quantity.Name #>.Name, Quantities.<#= quantity.Name #> },
 <#+	} #>
       };
@@ -208,19 +208,19 @@ namespace <#= ns #>
   }
 }
 <#+
-	return this.GenerationEnvironment.ToString();
-	}
+    return this.GenerationEnvironment.ToString();
+    }
 }
 
 public class QuantityTemplate : T4Toolbox.Template
 {
-	UnitSystemQuantity quantity;
-	public QuantityTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; Output.Encoding = System.Text.Encoding.Unicode; }
-	
+    UnitSystemQuantity quantity;
+    public QuantityTemplate(UnitSystemQuantity quantity) { this.quantity = quantity; Output.Encoding = System.Text.Encoding.Unicode; }
+    
     public override string TransformText()
     {
-		var unitSystem = quantity.Parent;
-		var data = unitSystem.Parent;
+        var unitSystem = quantity.Parent;
+        var data = unitSystem.Parent;
 #>
 using System;
 using System.Collections.Generic;
@@ -236,7 +236,7 @@ namespace <#= ns #>
       public static partial class <#= quantity.Name #>
       {
 <#+	foreach (var unit in quantity.Units.OfType<Unit>())
-	{ #>
+    { #>
 <#+ if (unit.Reference != null) { #>
         /// <summary>
         /// Reference: <#= unit.Reference #>
@@ -244,16 +244,16 @@ namespace <#= ns #>
 <#+ } #>
         public static BaseUnit <#= unit.Name #> { get; private set; }
 <#+	foreach (var prefixTable in unit.PrefixedUnits)
-	{ #>
+    { #>
         // Prefix Table: <#= prefixTable.Table.Name #>
 <#+	foreach (var prefix in prefixTable.Table.Prefixes)
-	{ #>
+    { #>
         public static ScaledUnit <#= prefix.Name #><#= unit.Name #> { get; private set; }
 <#+	} #>
 <#+	} #>
 <#+	} #>
 <#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
-	{ #>
+    { #>
 <#+ if (unit.Reference != null) { #>
         /// <summary>
         /// Reference: <#= unit.Reference #>
@@ -283,36 +283,36 @@ namespace <#= ns #>
         internal static void Initialize(UnitSystem unitSystem)
         {
 <#+	foreach (var unit in quantity.Units.OfType<Unit>())
-	{ #>
+    { #>
           <#= unit.Name #> = new BaseUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= ns #>.Quantities.<#= quantity.Name #>, unitSystem) { Caption = @"<#= unit.Singular.AsVerbatim() #>" };
 <#+	foreach (var prefixTable in unit.PrefixedUnits)
-	{ #>
+    { #>
 <#+	foreach (var prefix in prefixTable.Table.Prefixes)
-	{ #>
+    { #>
           <#= prefix.Name #><#= unit.Name #> = new ScaledUnit(@"<#= prefix.Name.AsVerbatim() #><#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= prefix.Symbol.AsVerbatim() #><#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.Name #>, <#= prefix.Factor #>, 0.0) { Caption = @"<#= prefix.Caption.AsVerbatim() #><#= unit.Singular.AsVerbatim() #>" };
 <#+	} #>
 <#+	} #>
 <#+	} #>
 <#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
-	{ #>
+    { #>
           <#= unit.Name #> = new ScaledUnit(@"<#= unit.Name.AsVerbatim() #>", <#+ if (unit.Symbol != null) {#>@"<#= unit.Symbol.AsVerbatim() #>"<#+} else {#>null<#+} #>, <#= unit.RelativeUnit.Name #>, <#= unit.Factor #>, <#= unit.Offset #>) { Caption = @"<#= unit.Singular.AsVerbatim() #>" };
 <#+ } #>
 
           allUnits = new Dictionary<string, Unit>
           {
 <#+	foreach (var unit in quantity.Units.OfType<Unit>())
-	{ #>
+    { #>
             { <#= unit.Name #>.Name, <#= unit.Name #> },
 <#+	foreach (var prefixTable in unit.PrefixedUnits)
-	{ #>
+    { #>
 <#+	foreach (var prefix in prefixTable.Table.Prefixes)
-	{ #>
+    { #>
             { <#= prefix.Name #><#= unit.Name #>.Name, <#= prefix.Name #><#= unit.Name #> },
 <#+	} #>
 <#+	} #>
 <#+	} #>
 <#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
-	{ #>
+    { #>
             { <#= unit.Name #>.Name, <#= unit.Name #> },
 <#+  } #>
           };
@@ -327,18 +327,18 @@ namespace <#= ns #>
   }
 }
 <#+
-	return this.GenerationEnvironment.ToString();
-	}
+    return this.GenerationEnvironment.ToString();
+    }
 }
 
 public class UnitSystemTemplate : T4Toolbox.Template
 {
-	UnitSystem unitSystem;
-	public UnitSystemTemplate(UnitSystem unitSystem) { this.unitSystem = unitSystem; Output.Encoding = System.Text.Encoding.Unicode; }
-	
+    UnitSystem unitSystem;
+    public UnitSystemTemplate(UnitSystem unitSystem) { this.unitSystem = unitSystem; Output.Encoding = System.Text.Encoding.Unicode; }
+    
     public override string TransformText()
     {
-		var data = unitSystem.Parent;
+        var data = unitSystem.Parent;
 #>
 using System;
 using System.Collections.Generic;
@@ -359,9 +359,9 @@ namespace <#= ns #>
       public static UnitSystem UnitSystem { get; internal set; }
 
 <#+	foreach (var quantity in unitSystem.Quantities)
-	{ 
-		new QuantityTemplate(quantity).RenderToFile(unitSystem.Name + "." + quantity.Name + ".cs");
-	} /* foreach quantity*/ #>
+    { 
+        new QuantityTemplate(quantity).RenderToFile(unitSystem.Name + "." + quantity.Name + ".cs");
+    } /* foreach quantity*/ #>
 
       #region [ Lookup ]
       private static Dictionary<string, Quantity> allQuantities;
@@ -397,20 +397,20 @@ namespace <#= ns #>
         }
       }
       #endregion [ Lookup ]
-	  
+      
       internal static UnitSystem Create(UnitConversionTable ConversionTable)
       {
         var unitSystem = new UnitSystem(@"<#= unitSystem.Name #>", ConversionTable) { Caption = @"<#= unitSystem.Caption #>" };
 
 <#+	foreach (var quantity in unitSystem.Quantities)
-	{ #>
+    { #>
         <#= quantity.Name #>.Initialize(unitSystem);
 <#+	} #>
 
         allQuantities = new Dictionary<string, Quantity>
         {
 <#+	foreach (var quantity in unitSystem.Quantities)
-	{ #>
+    { #>
           { @"<#= quantity.Name #>", <#= ns #>.Quantities.<#= quantity.Name #> },
 <#+	} #>
         };
@@ -418,24 +418,24 @@ namespace <#= ns #>
         allUnits = new Dictionary<Quantity, Dictionary<string, Unit>>(ReferenceEqualityComparer<Quantity>.Default)
         {
 <#+	foreach (var quantity in unitSystem.Quantities)
-	{ #>
+    { #>
           { 
             <#= ns #>.Quantities.<#= quantity.Name #>, 
             new Dictionary<string, Unit>
             {
 <#+	foreach (var unit in quantity.Units.OfType<Unit>())
-	{ #>
+    { #>
               { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #> },
 <#+	foreach (var prefixTable in unit.PrefixedUnits)
-	{ #>
+    { #>
 <#+	foreach (var prefix in prefixTable.Table.Prefixes)
-	{ #>
+    { #>
               { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= prefix.Name #><#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= prefix.Name #><#= unit.Name #> },
 <#+	} #>
 <#+	} #>
 <#+	} #>
 <#+	foreach (var unit in quantity.Units.OfType<ScaledUnit>())
-	{ #>
+    { #>
               { <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #>.Name, <#= ns #>.UnitSystems.<#= unitSystem.Name #>.<#= quantity.Name #>.<#= unit.Name #> },
 <#+  } #>
             }
@@ -454,7 +454,7 @@ namespace <#= ns #>
   }
 }
 <#+
-	return this.GenerationEnvironment.ToString();
-	}
+    return this.GenerationEnvironment.ToString();
+    }
 }
 #>
